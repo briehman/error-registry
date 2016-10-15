@@ -8,6 +8,9 @@ class InMemoryFailureRepository extends FailureRepository {
   override def find(code: String): Option[Failure] = codes.get(code)
 
   override def store(failure: Failure): Failure = {
+    if (codes.contains(failure.code)) {
+      throw new IllegalArgumentException("Cannot double persist")
+    }
     val storedFailure = failure.copy(id = codes.size)
     codes = codes + (failure.code -> storedFailure)
     storedFailure
@@ -34,11 +37,8 @@ class InMemoryFailureOccurrenceRepository(failureRepository: FailureRepository)
   }
 
   override def store(occurrence: FailureOccurrence): FailureOccurrence =  {
-    if (findByFailureId(occurrence.failure_pk).nonEmpty) {
-      throw new IllegalArgumentException("Cannot double persist")
-    }
     val stored = occurrence.copy(id = occurrences.size)
-    occurrences = occurrences + (occurrence.id -> stored)
+    occurrences = occurrences + (stored.id -> stored)
     stored
   }
 }

@@ -1,4 +1,4 @@
-import com.briehman.failureregistry.repository.InMemoryFailureRepository
+import com.briehman.failureregistry.repository.{InMemoryFailureOccurrenceRepository, InMemoryFailureRepository}
 import com.briehman.failureregistry.web.SendFailureResource
 import org.scalatra.LifeCycle
 import javax.servlet.ServletContext
@@ -12,6 +12,7 @@ class ScalatraBootstrap extends LifeCycle {
     context mount (new ScalatraTestServlet, "/scalatra")
 
     implicit val failureRepository = new InMemoryFailureRepository
+    implicit val occurrenceRepository = new InMemoryFailureOccurrenceRepository(failureRepository)
     context mount (new SendFailureResource, "/*")
 
   }

@@ -35,7 +35,6 @@ class ReceiveFailureInteractorTest extends org.scalatest.path.FunSpec with Match
       val msg = buildMessage("newFailure")
       val failure = Failure(msg)
       val response = interactor.receiveFailure(msg)
-//      interactor.receiveFailure(msg)
 
       it("responds with a ReceivedOk") {
         response shouldBe a [ReceivedOk]
@@ -75,6 +74,11 @@ class ReceiveFailureInteractorTest extends org.scalatest.path.FunSpec with Match
 
       it("does not notify about the failure") {
         verify(notificationService, times(0)).notify(failure)
+      }
+
+      it("persists the occurrence") {
+        val stored = failureRepository.find(failure.code)
+        occurrenceRepository.findByFailure(stored.get.code).size shouldBe 1
       }
     }
   }

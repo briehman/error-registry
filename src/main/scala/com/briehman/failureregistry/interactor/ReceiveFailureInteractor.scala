@@ -16,7 +16,7 @@ class ReceiveFailureInteractor(failureRepository: FailureRepository,
       val failure = storeFailure(Failure(message))
       val occurrence = FailureOccurrence(message, failure)
       occurrenceRepository.store(occurrence)
-      ReceivedOk(failure)
+      ReceivedOk(failure, occurrence)
     }
   }
 
