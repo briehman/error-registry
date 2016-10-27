@@ -1,0 +1,21 @@
+- import com.briehman.failureregistry.boundary.FailureSummary
+- attributes("title") = "Failures"
+
+-@ var recentFailures: Seq[FailureSummary]
+
+- recentFailures match
+    - case Nil =>
+        %h1 No recent failures
+    - case _ =>
+        %table
+            %thead
+                %th Code
+                %th First Seen
+                %th Last Seen
+                %th Total occurrences
+            - for (rf <- recentFailures)
+                %tr
+                    %td #{rf.failure.code}
+                    %td #{rf.occurrenceSummary.firstSeen}
+                    %td #{rf.occurrenceSummary.lastSeen}
+                    %td #{rf.occurrenceSummary.totalOccurrences}

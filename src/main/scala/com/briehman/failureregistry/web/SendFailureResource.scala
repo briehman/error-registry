@@ -15,18 +15,15 @@ import org.json4s.{DefaultFormats, Formats}
 import org.scalatra.json._
 
 case class DateTest(date: java.util.Date)
-class SendFailureResource(implicit val failureRepository: FailureRepository,
-                          implicit val occurrenceRepository: FailureOccurrenceRepository)
+class SendFailureResource(receiveFailureInteractor: ReceiveFailureInteractor)
   extends ScalatraServlet
     with JacksonJsonSupport
     with ScalateSupport {
   override protected implicit def jsonFormats: Formats = DefaultFormats + DateSerializer + CustomTimestampSerializer + UriSerializer
 
-  post("/failure") {
+  post("/error") {
     val failureMessage = parsedBody.extract[FailureMessage]
-    val messageTranslator = (msg: FailureMessage) => null
-    val interactor = new ReceiveFailureInteractor(failureRepository, occurrenceRepository, new FakeNotificationService)
-    val response = interactor.receiveFailure(failureMessage)
+    val response = receiveFailureInteractor.receiveFailure(failureMessage)
 
     response match {
       case ReceivedOk(f, o) =>
@@ -44,23 +41,14 @@ class SendFailureResource(implicit val failureRepository: FailureRepository,
     }
   }
 
-  post("/date") {
-    val dateTest = parsedBody.extract[DateTest]
-    <html>
-      <body>
-        <h1>You posted a failure for date {dateTest.date}</h1>
-      </body>
-    </html>
-  }
-
-  get("/list") {
-    findTemplate(requestPath) map { path =>
-      contentType = "text/html"
-      val failures = failureRepository.listCodes map { code =>
-        code -> occurrenceRepository.findByFailure(code).map(_.toString)
-      }
-      layoutTemplate(path, "failures" -> failures)
-    } orElse serveStaticResource() getOrElse resourceNotFound()
-  }
+//  get("/errors") {
+//    findTemplate(requestPath) map { path =>
+//      contentType = "text/html"
+//      val failures = failureRepository.listCodes map { code =>
+//        code -> occurrenceRepository.findByFailure(code).map(_.toString)
+//      }
+//      layoutTemplate(path, "failures" -> failures)
+//    } orElse serveStaticResource() getOrElse resourceNotFound()
+//  }
 
 }

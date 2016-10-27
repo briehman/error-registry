@@ -1,5 +1,7 @@
 lazy val scalatraVersion = "2.3.1"
 
+scalacOptions  ++= Seq("-feature", "-language:postfixOps")
+
 lazy val root = (project in file("."))
   .enablePlugins(JettyPlugin)
   .settings(
@@ -23,9 +25,12 @@ lazy val root = (project in file("."))
       "org.scalatra" %% "scalatra-json" % scalatraVersion,
       "org.scalatra" %% "scalatra-specs2" % scalatraVersion % "test",
       "org.scala-lang.modules" % "scala-xml_2.11" % "1.0.5",
-      "org.json4s" %% "json4s-jackson" % "3.3.0"
+      "org.json4s" %% "json4s-jackson" % "3.3.0",
+      "com.github.sstone" % "amqp-client_2.11" % "1.5",
+      "com.typesafe.akka" %% "akka-actor" % "2.4.0"
     )
   )
+
 
 javaOptions in Jetty ++= Seq(
   "-Xdebug",

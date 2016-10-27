@@ -56,7 +56,7 @@ class ReceiveFailureInteractorTest extends org.scalatest.path.FunSpec with Match
       }
     }
 
-    describe("receiving an existing failure") {
+    describe("receiving a previously stored failure") {
       val msg = buildMessage("existingFailure")
       val failure = Failure(msg)
       val existingFailure = failureRepository.store(failure)
@@ -66,9 +66,8 @@ class ReceiveFailureInteractorTest extends org.scalatest.path.FunSpec with Match
         response shouldBe a [ReceivedOk]
       }
 
-      it("does not need to persist the existing failure") {
+      it("does not persist the existing failure") {
         val stored = failureRepository.find(failure.code)
-        stored shouldNot be(None)
         stored.get.id shouldBe existingFailure.id
       }
 

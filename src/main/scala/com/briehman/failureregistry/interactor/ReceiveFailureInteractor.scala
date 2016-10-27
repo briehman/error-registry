@@ -20,7 +20,7 @@ class ReceiveFailureInteractor(failureRepository: FailureRepository,
     }
   }
 
-  def storeFailure(failure: Failure): Failure = {
+  private def storeFailure(failure: Failure): Failure = {
     val existingFailure = failureRepository.find(failure.code)
     val returnFailure = existingFailure match {
       case None =>
