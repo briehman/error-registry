@@ -1,0 +1,1 @@
+{"code": "test3", "application": "testapp", "occurrence": { "date": "2004-09-04T18:06:22Z", "hostname": "hostname_here", "build": "buildname", "branch": "branchname", "environment": "env", "user": "username", "requestInformation": { "uri": "http://localhost:8080", "parameters": "none", "type": "typename", "sessionId": "JSESSION" } } }
