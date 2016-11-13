@@ -15,15 +15,6 @@ class GetFailureSummaryInteractorTest extends FunSpec with Matchers {
   val interactor = new GetFailureSummaryInteractor(failureRepository, occurrenceRepository)
 
   describe("GetFailureSummaryInteractor") {
-    it("retrieves stored failures") {
-      val failure = failureRepository.store(new Failure(-2, "existing"))
-      interactor.findFailure("existing") shouldBe Some(failure)
-    }
-
-    it("returns None for unknown failures") {
-      interactor.findFailure("unknown") shouldBe None
-    }
-
     describe("finding failures after a timestamp") {
       it("finds those stored immediately following") {
         val dt = LocalDateTime.of(LocalDate.of(2016, 1, 1), LocalTime.of(12, 0, 0, 0))

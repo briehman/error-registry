@@ -10,10 +10,6 @@ class GetFailureSummaryInteractor(failureRepository: FailureRepository,
                                   failureOccurrenceRepository: FailureOccurrenceRepository)
   extends GetFailureSummaryBoundary {
 
-  override def findFailure(code: String): Option[Failure] = {
-    failureRepository.find(code)
-  }
-
   override def getUniqueRecentOccurrenceSummaries(since: LocalDateTime, max: Int): Seq[FailureSummary] = {
     mapToFailureOccurrences(failureOccurrenceRepository
       .listUniqueRecentOccurrences(since, max))

@@ -5,7 +5,6 @@ import java.time.LocalDateTime
 import com.briehman.failureregistry.models.Failure
 
 trait GetFailureSummaryBoundary {
-  def findFailure(code: String): Option[Failure]
   def getUniqueRecentOccurrenceSummaries(since: LocalDateTime, max: Int): Seq[FailureSummary]
   def getTopRecentOccurrencesSummaries(since: LocalDateTime, max: Int): Seq[FailureSummary]
 }
