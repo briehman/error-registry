@@ -3,18 +3,18 @@ package com.briehman.failureregistry.interactor
 import java.sql.Timestamp
 import java.time.{LocalTime, LocalDate, LocalDateTime}
 
-import com.briehman.failureregistry.boundary.FailureSummary
+import com.briehman.failureregistry.boundary.{FailureOccurrenceSummary, FailureSummary}
 import com.briehman.failureregistry.models.{FailureOccurrence, Failure}
 import org.scalatest.Matchers
 import org.scalatest.path.FunSpec
 import com.briehman.failureregistry.repository.{FailureOccurrenceSummary, InMemoryFailureOccurrenceRepository, InMemoryFailureRepository}
 
-class ListFailuresInteractorTest extends FunSpec with Matchers {
+class GetFailureSummaryInteractorTest extends FunSpec with Matchers {
   val failureRepository = new InMemoryFailureRepository
   val occurrenceRepository = new InMemoryFailureOccurrenceRepository(failureRepository)
-  val interactor = new ListFailuresInteractor(failureRepository, occurrenceRepository)
+  val interactor = new GetFailureSummaryInteractor(failureRepository, occurrenceRepository)
 
-  describe("ListFailuresInteractor") {
+  describe("GetFailureSummaryInteractor") {
     it("retrieves stored failures") {
       val failure = failureRepository.store(new Failure(-2, "existing"))
       interactor.findFailure("existing") shouldBe Some(failure)

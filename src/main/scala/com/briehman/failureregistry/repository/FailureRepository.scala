@@ -2,6 +2,7 @@ package com.briehman.failureregistry.repository
 
 import java.time.LocalDateTime
 
+import com.briehman.failureregistry.boundary.FailureOccurrenceSummary
 import com.briehman.failureregistry.models.{Failure, FailureOccurrence}
 
 trait FailureRepository {
@@ -19,8 +20,3 @@ trait FailureOccurrenceRepository {
   def listUniqueRecentOccurrences(since: LocalDateTime, max: Int): Seq[FailureOccurrenceSummary]
   def listTopOccurrences(since: LocalDateTime, max: Int): Seq[FailureOccurrenceSummary]
 }
-
-case class FailureOccurrenceSummary(failure_pk: Int,
-                                    firstSeen: LocalDateTime,
-                                    lastSeen: LocalDateTime,
-                                    totalOccurrences: Int)

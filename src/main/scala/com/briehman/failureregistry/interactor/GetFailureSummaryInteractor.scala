@@ -2,13 +2,13 @@ package com.briehman.failureregistry.interactor
 
 import java.time.LocalDateTime
 
-import com.briehman.failureregistry.boundary.{FailureSummary, ListFailuresBoundary}
+import com.briehman.failureregistry.boundary.{FailureOccurrenceSummary, FailureSummary, GetFailureSummaryBoundary}
 import com.briehman.failureregistry.models.Failure
-import com.briehman.failureregistry.repository.{FailureOccurrenceSummary, FailureOccurrenceRepository, FailureRepository}
+import com.briehman.failureregistry.repository.{FailureOccurrenceRepository, FailureRepository}
 
-class ListFailuresInteractor(failureRepository: FailureRepository,
-                             failureOccurrenceRepository: FailureOccurrenceRepository)
-  extends ListFailuresBoundary {
+class GetFailureSummaryInteractor(failureRepository: FailureRepository,
+                                  failureOccurrenceRepository: FailureOccurrenceRepository)
+  extends GetFailureSummaryBoundary {
 
   override def findFailure(code: String): Option[Failure] = {
     failureRepository.find(code)

@@ -3,7 +3,7 @@ import javax.servlet.ServletContext
 import akka.actor.ActorSystem
 import com.briehman.failureregistry.ScalatraTestServlet
 import com.briehman.failureregistry.dispatcher.RabbitMqReceiveFailureDispatcher
-import com.briehman.failureregistry.interactor.{ListFailuresInteractor, ReceiveFailureInteractor}
+import com.briehman.failureregistry.interactor.{GetFailureSummaryInteractor, ReceiveFailureInteractor}
 import com.briehman.failureregistry.repository.{InMemoryFailureOccurrenceRepository, InMemoryFailureRepository}
 import com.briehman.failureregistry.service.FakeNotificationService
 import com.briehman.failureregistry.web.HomePageServlet
@@ -29,7 +29,7 @@ class ScalatraBootstrap extends LifeCycle {
     notificationService
   )
 
-  val listFailuresInteractor = new ListFailuresInteractor(failureRepository, occurrenceRepository)
+  val failureSummaryInteractor = new GetFailureSummaryInteractor(failureRepository, occurrenceRepository)
 
   val receiveDispatcher = new RabbitMqReceiveFailureDispatcher(system, connFactory, receiveInteractor)
 
@@ -38,7 +38,7 @@ class ScalatraBootstrap extends LifeCycle {
 
     // mount servlets like this:
     context mount (new SendFailureResource(receiveInteractor), "/error*")
-    context mount (new HomePageServlet(listFailuresInteractor), "/")
+    context mount (new HomePageServlet(failureSummaryInteractor), "/")
   }
 
   override def destroy(context: ServletContext): Unit = {

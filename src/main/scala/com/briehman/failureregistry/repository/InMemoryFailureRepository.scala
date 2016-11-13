@@ -3,6 +3,7 @@ package com.briehman.failureregistry.repository
 import java.sql.Timestamp
 import java.time.LocalDateTime
 
+import com.briehman.failureregistry.boundary.FailureOccurrenceSummary
 import com.briehman.failureregistry.models.{Failure, FailureOccurrence}
 
 class InMemoryFailureRepository extends FailureRepository {
