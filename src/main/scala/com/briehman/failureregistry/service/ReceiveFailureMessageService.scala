@@ -6,8 +6,6 @@ import com.briehman.failureregistry.message.FailureMessage
 trait ReceiveFailureMessageService {
   val processFailureInteractor: ReceiveFailureInteractor
 
-  def start()
-  def stop()
   def onReceive(failure: FailureMessage) = {
     processFailureInteractor.receiveFailure(failure)
   }

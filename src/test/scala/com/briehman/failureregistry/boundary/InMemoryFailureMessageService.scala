@@ -11,8 +11,4 @@ class InMemoryFailureMessageService(val processFailureInteractor: ReceiveFailure
     onReceive(failure)
     MessageSent
   }
-
-  override def stop(): Unit = {}
-
-  override def start(): Unit = {}
 }
