@@ -1,10 +1,9 @@
-package com.briehman.failureregistry.web
+package com.briehman.failureregistry.web.api
 
 import com.briehman.failureregistry.boundary.{ReceiveFailed, ReceivedOk}
 import com.briehman.failureregistry.interactor.ReceiveFailureInteractor
 import com.briehman.failureregistry.message.FailureMessage
-import com.briehman.failureregistry.repository.{FailureOccurrenceRepository, FailureRepository}
-import com.briehman.failureregistry.service.FakeNotificationService
+import com.briehman.failureregistry.web.{UriSerializer, CustomTimestampSerializer, DateSerializer}
 import org.scalatra.ScalatraServlet
 import org.scalatra.scalate.ScalateSupport
 
@@ -14,7 +13,6 @@ import org.json4s.{DefaultFormats, Formats}
 // JSON handling support from Scalatra
 import org.scalatra.json._
 
-case class DateTest(date: java.util.Date)
 class SendFailureResource(receiveFailureInteractor: ReceiveFailureInteractor)
   extends ScalatraServlet
     with JacksonJsonSupport

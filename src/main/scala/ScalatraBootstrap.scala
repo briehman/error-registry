@@ -6,7 +6,8 @@ import com.briehman.failureregistry.dispatcher.RabbitMqReceiveFailureDispatcher
 import com.briehman.failureregistry.interactor.{ListFailuresInteractor, ReceiveFailureInteractor}
 import com.briehman.failureregistry.repository.{InMemoryFailureOccurrenceRepository, InMemoryFailureRepository}
 import com.briehman.failureregistry.service.FakeNotificationService
-import com.briehman.failureregistry.web.SendFailureResource
+import com.briehman.failureregistry.web.HomePageServlet
+import com.briehman.failureregistry.web.api.SendFailureResource
 import com.rabbitmq.client.ConnectionFactory
 import org.scalatra.LifeCycle
 
@@ -36,7 +37,6 @@ class ScalatraBootstrap extends LifeCycle {
     receiveDispatcher.start()
 
     // mount servlets like this:
-    context mount (new ScalatraTestServlet, "/scalatra")
     context mount (new SendFailureResource(receiveInteractor), "/error*")
     context mount (new HomePageServlet(listFailuresInteractor), "/")
   }

@@ -1,9 +1,9 @@
+package com.briehman.failureregistry.web
+
 
 import java.time.LocalDateTime
 
 import com.briehman.failureregistry.boundary.ListFailuresBoundary
-import com.briehman.failureregistry.repository.{FailureOccurrenceRepository, FailureRepository}
-import com.briehman.failureregistry.web.{CustomTimestampSerializer, DateSerializer, UriSerializer}
 import org.scalatra.ScalatraServlet
 import org.scalatra.scalate.ScalateSupport
 
@@ -12,8 +12,6 @@ import org.json4s.{DefaultFormats, Formats}
 
 // JSON handling support from Scalatra
 import org.scalatra.json._
-
-case class DateTest(date: java.util.Date)
 
 class HomePageServlet(listFailures: ListFailuresBoundary)
   extends ScalatraServlet
