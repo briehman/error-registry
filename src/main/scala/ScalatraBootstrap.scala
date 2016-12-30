@@ -37,7 +37,7 @@ class ScalatraBootstrap extends LifeCycle {
     receiveDispatcher.start()
 
     // mount servlets like this:
-    context mount (new SendFailureResource(receiveInteractor), "/error*")
+    context mount (new SendFailureResource(receiveInteractor), "/error/*")
     context mount (new HomePageServlet(failureSummaryInteractor), "/")
   }
 

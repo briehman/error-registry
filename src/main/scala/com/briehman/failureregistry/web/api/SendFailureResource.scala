@@ -19,7 +19,7 @@ class SendFailureResource(receiveFailureInteractor: ReceiveFailureInteractor)
     with ScalateSupport {
   override protected implicit def jsonFormats: Formats = DefaultFormats + DateSerializer + CustomTimestampSerializer + UriSerializer
 
-  post("/error") {
+  post("/") {
     val failureMessage = parsedBody.extract[FailureMessage]
     val response = receiveFailureInteractor.receiveFailure(failureMessage)
 
