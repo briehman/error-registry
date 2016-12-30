@@ -66,7 +66,7 @@ class InMemoryFailureOccurrenceRepository(failureRepository: FailureRepository)
       .takeRight(max)
   }
 
-  override def listTopOccurrences(since: LocalDateTime, max: Int): Seq[FailureOccurrenceSummary] = {
+  override def listMostFrequentOccurrences(since: LocalDateTime, max: Int): Seq[FailureOccurrenceSummary] = {
     getOccurrenceSummariesSince(since)
       .sortBy(_.totalOccurrences)
       .takeRight(max)

@@ -11,13 +11,11 @@ class GetFailureSummaryInteractor(failureRepository: FailureRepository,
   extends GetFailureSummaryBoundary {
 
   override def getUniqueRecentOccurrenceSummaries(since: LocalDateTime, max: Int): Seq[FailureSummary] = {
-    mapToFailureOccurrences(failureOccurrenceRepository
-      .listUniqueRecentOccurrences(since, max))
+    mapToFailureOccurrences(failureOccurrenceRepository.listUniqueRecentOccurrences(since, max))
   }
 
-  override def getTopRecentOccurrencesSummaries(since: LocalDateTime, max: Int): Seq[FailureSummary] = {
-    mapToFailureOccurrences(failureOccurrenceRepository
-      .listTopOccurrences(since, max))
+  override def getMostFrequentRecentOccurrencesSummaries(since: LocalDateTime, max: Int): Seq[FailureSummary] = {
+    mapToFailureOccurrences(failureOccurrenceRepository.listMostFrequentOccurrences(since, max))
   }
 
   private def mapToFailureOccurrences(occurrences: Seq[FailureOccurrenceSummary]): Seq[FailureSummary] = {

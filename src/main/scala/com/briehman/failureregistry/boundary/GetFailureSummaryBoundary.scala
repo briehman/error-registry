@@ -6,7 +6,7 @@ import com.briehman.failureregistry.models.Failure
 
 trait GetFailureSummaryBoundary {
   def getUniqueRecentOccurrenceSummaries(since: LocalDateTime, max: Int): Seq[FailureSummary]
-  def getTopRecentOccurrencesSummaries(since: LocalDateTime, max: Int): Seq[FailureSummary]
+  def getMostFrequentRecentOccurrencesSummaries(since: LocalDateTime, max: Int): Seq[FailureSummary]
 }
 
 case class FailureSummary(failure: Failure,

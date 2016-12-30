@@ -18,5 +18,5 @@ trait FailureOccurrenceRepository {
   def findByFailure(code: String): Seq[FailureOccurrence]
   def store(occurrence: FailureOccurrence): FailureOccurrence
   def listUniqueRecentOccurrences(since: LocalDateTime, max: Int): Seq[FailureOccurrenceSummary]
-  def listTopOccurrences(since: LocalDateTime, max: Int): Seq[FailureOccurrenceSummary]
+  def listMostFrequentOccurrences(since: LocalDateTime, max: Int): Seq[FailureOccurrenceSummary]
 }

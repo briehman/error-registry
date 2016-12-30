@@ -53,7 +53,7 @@ class GetFailureSummaryInteractorTest extends FunSpec with Matchers {
       it("finds the first occurrence when is the only one") {
         val dt = LocalDateTime.of(LocalDate.of(2016, 1, 1), LocalTime.of(12, 0, 0, 0))
         val selectFailure = storeFailureAndOccurrence("find", dt)
-        interactor.getTopRecentOccurrencesSummaries(dt.minusSeconds(1), 1) shouldBe
+        interactor.getMostFrequentRecentOccurrencesSummaries(dt.minusSeconds(1), 1) shouldBe
           List(FailureSummary(selectFailure, FailureOccurrenceSummary(selectFailure.id, dt, dt, 1)))
       }
 
@@ -64,7 +64,7 @@ class GetFailureSummaryInteractorTest extends FunSpec with Matchers {
           storeOccurrence(dt.plusSeconds(i), selectFailure)
         }
         storeFailureAndOccurrence("skip", dt.plusSeconds(100))
-        interactor.getTopRecentOccurrencesSummaries(dt.minusSeconds(1), 1) shouldBe
+        interactor.getMostFrequentRecentOccurrencesSummaries(dt.minusSeconds(1), 1) shouldBe
           List(FailureSummary(selectFailure, FailureOccurrenceSummary(selectFailure.id, dt, dt.plusSeconds(20), 21)))
       }
     }
