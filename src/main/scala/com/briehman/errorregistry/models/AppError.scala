@@ -22,7 +22,7 @@ case class ErrorOccurrence(
                             )
 
 object ErrorOccurrence {
-  def apply(message: AppErrorMessage, error: AppError) = {
+  def apply(message: AppErrorMessage, error: AppError): ErrorOccurrence = {
     new ErrorOccurrence(-1, error.id, new Timestamp(Calendar.getInstance().getTime.getTime))
   }
 }
