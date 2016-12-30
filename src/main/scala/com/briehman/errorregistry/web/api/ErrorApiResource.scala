@@ -13,7 +13,7 @@ import org.json4s.{DefaultFormats, Formats}
 // JSON handling support from Scalatra
 import org.scalatra.json._
 
-class SendErrorResource(receiveErrorInteractor: ReceiveErrorInteractor)
+class ErrorApiResource(receiveErrorInteractor: ReceiveErrorInteractor)
   extends ScalatraServlet
     with JacksonJsonSupport
     with ScalateSupport {

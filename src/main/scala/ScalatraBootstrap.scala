@@ -6,7 +6,7 @@ import com.briehman.errorregistry.interactor.{GetErrorSummaryInteractor, Receive
 import com.briehman.errorregistry.repository.{InMemoryErrorOccurrenceRepository, InMemoryErrorRepository}
 import com.briehman.errorregistry.service.FakeNotificationService
 import com.briehman.errorregistry.web.HomePageServlet
-import com.briehman.errorregistry.web.api.SendErrorResource
+import com.briehman.errorregistry.web.api.ErrorApiResource
 import com.rabbitmq.client.ConnectionFactory
 import org.scalatra.LifeCycle
 
@@ -36,7 +36,7 @@ class ScalatraBootstrap extends LifeCycle {
     receiveDispatcher.start()
 
     // mount servlets like this:
-    context mount (new SendErrorResource(receiveInteractor), "/error/*")
+    context mount (new ErrorApiResource(receiveInteractor), "/api/error/*")
     context mount (new HomePageServlet(errorSummaryInteractor), "/")
   }
 
