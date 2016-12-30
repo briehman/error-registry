@@ -21,12 +21,17 @@ class HomePageServlet(errorSummaryBoundary: GetErrorSummaryBoundary)
 
   get("/") {
     contentType = "text/html"
-    val recentErrors = errorSummaryBoundary.getUniqueRecentOccurrenceSummaries(LocalDateTime.now().minusMinutes(1), 5)
-    val mostFrequentErrors = errorSummaryBoundary.getMostFrequentRecentOccurrencesSummaries(LocalDateTime.now().minusMinutes(1), 5)
+    val newErrors = errorSummaryBoundary.listNew(LocalDateTime.now().minusWeeks(1), 5)
+    val recentErrors = errorSummaryBoundary.listRecent(LocalDateTime.now().minusWeeks(1), 5)
+    val mostFrequentWeeklyErrors = errorSummaryBoundary.listMostFrequent(LocalDateTime.now().minusWeeks(1), 10)
+    val mostFrequentMonthlyErrors = errorSummaryBoundary.listMostFrequent(LocalDateTime.now().minusMonths(1), 10)
 
     scaml("/WEB-INF/views/home.scaml",
+      "newErrors" -> newErrors,
       "recentErrors" -> recentErrors,
-      "mostFrequentErrors" -> mostFrequentErrors)
+      "mostFrequentWeeklyErrors" -> mostFrequentWeeklyErrors,
+      "mostFrequentMonthlyErrors" -> mostFrequentMonthlyErrors
+    )
   }
 
 }

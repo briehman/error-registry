@@ -1,8 +1,28 @@
 - import com.briehman.errorregistry.boundary.ErrorSummary
 - attributes("title") = "Error Registry"
 
+-@ var newErrors: Seq[ErrorSummary]
 -@ var recentErrors: Seq[ErrorSummary]
--@ var mostFrequentErrors: Seq[ErrorSummary]
+-@ var mostFrequentWeeklyErrors: Seq[ErrorSummary]
+-@ var mostFrequentMonthlyErrors: Seq[ErrorSummary]
+
+- newErrors match
+    - case Nil =>
+        %h1 No new errors
+    - case _ =>
+        %table
+            %caption New Errors
+            %thead
+                %th Code
+                %th First Seen
+                %th Last Seen
+                %th Total occurrences
+            - for (e <- newErrors)
+                %tr
+                    %td #{e.error.code}
+                    %td #{e.occurrenceSummary.firstSeen}
+                    %td #{e.occurrenceSummary.lastSeen}
+                    %td #{e.occurrenceSummary.totalOccurrences}
 
 - recentErrors match
     - case Nil =>
@@ -22,18 +42,36 @@
                     %td #{e.occurrenceSummary.lastSeen}
                     %td #{e.occurrenceSummary.totalOccurrences}
 
-- mostFrequentErrors match
+- mostFrequentWeeklyErrors match
     - case Nil =>
         %h1 No frequent errors
     - case _ =>
         %table
-            %caption Frequent Errors
+            %caption Most Frequent Errors this week
             %thead
                 %th Code
                 %th First Seen
                 %th Last Seen
                 %th Total occurrences
-            - for (e <- mostFrequentErrors)
+            - for (e <- mostFrequentWeeklyErrors)
+                %tr
+                    %td #{e.error.code}
+                    %td #{e.occurrenceSummary.firstSeen}
+                    %td #{e.occurrenceSummary.lastSeen}
+                    %td #{e.occurrenceSummary.totalOccurrences}
+
+- mostFrequentMonthlyErrors match
+    - case Nil =>
+        %h1 No frequent errors
+    - case _ =>
+        %table
+            %caption Most Frequent Errors this month
+            %thead
+                %th Code
+                %th First Seen
+                %th Last Seen
+                %th Total occurrences
+            - for (e <- mostFrequentMonthlyErrors)
                 %tr
                     %td #{e.error.code}
                     %td #{e.occurrenceSummary.firstSeen}

@@ -17,6 +17,7 @@ trait ErrorOccurrenceRepository {
   def find(id: Int): Option[ErrorOccurrence]
   def findByCode(code: String): Seq[ErrorOccurrence]
   def store(occurrence: ErrorOccurrence): ErrorOccurrence
-  def listUniqueRecentOccurrences(since: LocalDateTime, max: Int): Seq[ErrorOccurrenceSummary]
-  def listMostFrequentOccurrences(since: LocalDateTime, max: Int): Seq[ErrorOccurrenceSummary]
+  def listUniqueNew(since: LocalDateTime, max: Int): Seq[ErrorOccurrenceSummary]
+  def listUniqueRecent(since: LocalDateTime, max: Int): Seq[ErrorOccurrenceSummary]
+  def listUniqueMostFrequent(since: LocalDateTime, max: Int): Seq[ErrorOccurrenceSummary]
 }

@@ -5,8 +5,9 @@ import java.time.LocalDateTime
 import com.briehman.errorregistry.models.AppError
 
 trait GetErrorSummaryBoundary {
-  def getUniqueRecentOccurrenceSummaries(since: LocalDateTime, max: Int): Seq[ErrorSummary]
-  def getMostFrequentRecentOccurrencesSummaries(since: LocalDateTime, max: Int): Seq[ErrorSummary]
+  def listNew(since: LocalDateTime, max: Int): Seq[ErrorSummary]
+  def listRecent(since: LocalDateTime, max: Int): Seq[ErrorSummary]
+  def listMostFrequent(since: LocalDateTime, max: Int): Seq[ErrorSummary]
 }
 
 case class ErrorSummary(error: AppError,

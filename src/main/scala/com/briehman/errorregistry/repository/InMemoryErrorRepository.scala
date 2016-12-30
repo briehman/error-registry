@@ -60,13 +60,20 @@ class InMemoryErrorOccurrenceRepository(errorRepository: ErrorRepository)
     stored
   }
 
-  override def listUniqueRecentOccurrences(since: LocalDateTime, max: Int): Seq[ErrorOccurrenceSummary] = {
+  override def listUniqueNew(since: LocalDateTime, max: Int): Seq[ErrorOccurrenceSummary] = {
+    getOccurrenceSummariesSince(since)
+      .filter(o => o.firstSeen.isAfter(since))
+      .sortBy(_.firstSeen)(Ordering[LocalDateTime].reverse)
+      .take(max)
+  }
+
+  override def listUniqueRecent(since: LocalDateTime, max: Int): Seq[ErrorOccurrenceSummary] = {
     getOccurrenceSummariesSince(since)
       .sortBy(_.lastSeen)(Ordering[LocalDateTime].reverse)
       .take(max)
   }
 
-  override def listMostFrequentOccurrences(since: LocalDateTime, max: Int): Seq[ErrorOccurrenceSummary] = {
+  override def listUniqueMostFrequent(since: LocalDateTime, max: Int): Seq[ErrorOccurrenceSummary] = {
     getOccurrenceSummariesSince(since)
       .sortBy(_.totalOccurrences)(Ordering[Int].reverse)
       .take(max)
