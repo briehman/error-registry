@@ -1,13 +1,12 @@
 import javax.servlet.ServletContext
 
 import akka.actor.ActorSystem
-import com.briehman.failureregistry.ScalatraTestServlet
-import com.briehman.failureregistry.dispatcher.RabbitMqReceiveFailureDispatcher
-import com.briehman.failureregistry.interactor.{GetFailureSummaryInteractor, ReceiveFailureInteractor}
-import com.briehman.failureregistry.repository.{InMemoryFailureOccurrenceRepository, InMemoryFailureRepository}
-import com.briehman.failureregistry.service.FakeNotificationService
-import com.briehman.failureregistry.web.HomePageServlet
-import com.briehman.failureregistry.web.api.SendFailureResource
+import com.briehman.errorregistry.dispatcher.RabbitMqReceiveErrorDispatcher
+import com.briehman.errorregistry.interactor.{GetErrorSummaryInteractor, ReceiveErrorInteractor}
+import com.briehman.errorregistry.repository.{InMemoryErrorOccurrenceRepository, InMemoryErrorRepository}
+import com.briehman.errorregistry.service.FakeNotificationService
+import com.briehman.errorregistry.web.HomePageServlet
+import com.briehman.errorregistry.web.api.SendErrorResource
 import com.rabbitmq.client.ConnectionFactory
 import org.scalatra.LifeCycle
 
@@ -18,27 +17,27 @@ class ScalatraBootstrap extends LifeCycle {
   val connFactory = new ConnectionFactory()
   connFactory.setUri("amqp://guest:guest@localhost/%2F")
 
-  implicit val failureRepository = new InMemoryFailureRepository
-  implicit val occurrenceRepository = new InMemoryFailureOccurrenceRepository(failureRepository)
+  implicit val errorRepository = new InMemoryErrorRepository
+  implicit val occurrenceRepository = new InMemoryErrorOccurrenceRepository(errorRepository)
   val notificationService = new FakeNotificationService
   var system: ActorSystem = ActorSystem("receiveSystem")
 
-  val receiveInteractor: ReceiveFailureInteractor = new ReceiveFailureInteractor(
-    failureRepository,
+  val receiveInteractor: ReceiveErrorInteractor = new ReceiveErrorInteractor(
+    errorRepository,
     occurrenceRepository,
     notificationService
   )
 
-  val failureSummaryInteractor = new GetFailureSummaryInteractor(failureRepository, occurrenceRepository)
+  val errorSummaryInteractor = new GetErrorSummaryInteractor(errorRepository, occurrenceRepository)
 
-  val receiveDispatcher = new RabbitMqReceiveFailureDispatcher(system, connFactory, receiveInteractor)
+  val receiveDispatcher = new RabbitMqReceiveErrorDispatcher(system, connFactory, receiveInteractor)
 
   override def init(context: ServletContext) {
     receiveDispatcher.start()
 
     // mount servlets like this:
-    context mount (new SendFailureResource(receiveInteractor), "/error/*")
-    context mount (new HomePageServlet(failureSummaryInteractor), "/")
+    context mount (new SendErrorResource(receiveInteractor), "/error/*")
+    context mount (new HomePageServlet(errorSummaryInteractor), "/")
   }
 
   override def destroy(context: ServletContext): Unit = {

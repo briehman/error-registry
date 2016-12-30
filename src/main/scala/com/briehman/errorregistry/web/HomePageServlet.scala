@@ -1,9 +1,9 @@
-package com.briehman.failureregistry.web
+package com.briehman.errorregistry.web
 
 
 import java.time.LocalDateTime
 
-import com.briehman.failureregistry.boundary.GetFailureSummaryBoundary
+import com.briehman.errorregistry.boundary.GetErrorSummaryBoundary
 import org.scalatra.ScalatraServlet
 import org.scalatra.scalate.ScalateSupport
 
@@ -13,7 +13,7 @@ import org.json4s.{DefaultFormats, Formats}
 // JSON handling support from Scalatra
 import org.scalatra.json._
 
-class HomePageServlet(failureSummaryBoundary: GetFailureSummaryBoundary)
+class HomePageServlet(errorSummaryBoundary: GetErrorSummaryBoundary)
   extends ScalatraServlet
     with JacksonJsonSupport
     with ScalateSupport {
@@ -21,12 +21,12 @@ class HomePageServlet(failureSummaryBoundary: GetFailureSummaryBoundary)
 
   get("/") {
     contentType = "text/html"
-    val recentFailures = failureSummaryBoundary.getUniqueRecentOccurrenceSummaries(LocalDateTime.now().minusMinutes(1), 5)
-    val mostFrequentFailures = failureSummaryBoundary.getMostFrequentRecentOccurrencesSummaries(LocalDateTime.now().minusMinutes(1), 5)
+    val recentErrors = errorSummaryBoundary.getUniqueRecentOccurrenceSummaries(LocalDateTime.now().minusMinutes(1), 5)
+    val mostFrequentErrors = errorSummaryBoundary.getMostFrequentRecentOccurrencesSummaries(LocalDateTime.now().minusMinutes(1), 5)
 
     scaml("/WEB-INF/views/home.scaml",
-      "recentFailures" -> recentFailures,
-      "mostFrequentFailures" -> mostFrequentFailures)
+      "recentErrors" -> recentErrors,
+      "mostFrequentErrors" -> mostFrequentErrors)
   }
 
 }

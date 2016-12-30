@@ -1,41 +1,41 @@
-- import com.briehman.failureregistry.boundary.FailureSummary
+- import com.briehman.errorregistry.boundary.ErrorSummary
 - attributes("title") = "Error Registry"
 
--@ var recentFailures: Seq[FailureSummary]
--@ var mostFrequentFailures: Seq[FailureSummary]
+-@ var recentErrors: Seq[ErrorSummary]
+-@ var mostFrequentErrors: Seq[ErrorSummary]
 
-- recentFailures match
+- recentErrors match
     - case Nil =>
-        %h1 No recent failures
+        %h1 No recent errors
     - case _ =>
         %table
-            %caption Recent Failures
+            %caption Recent Errors
             %thead
                 %th Code
                 %th First Seen
                 %th Last Seen
                 %th Total occurrences
-            - for (f <- recentFailures)
+            - for (e <- recentErrors)
                 %tr
-                    %td #{f.failure.code}
-                    %td #{f.occurrenceSummary.firstSeen}
-                    %td #{f.occurrenceSummary.lastSeen}
-                    %td #{f.occurrenceSummary.totalOccurrences}
+                    %td #{e.error.code}
+                    %td #{e.occurrenceSummary.firstSeen}
+                    %td #{e.occurrenceSummary.lastSeen}
+                    %td #{e.occurrenceSummary.totalOccurrences}
 
-- mostFrequentFailures match
+- mostFrequentErrors match
     - case Nil =>
-        %h1 No frequent failures
+        %h1 No frequent errors
     - case _ =>
         %table
-            %caption Frequent Failures
+            %caption Frequent Errors
             %thead
                 %th Code
                 %th First Seen
                 %th Last Seen
                 %th Total occurrences
-            - for (f <- mostFrequentFailures)
+            - for (e <- mostFrequentErrors)
                 %tr
-                    %td #{f.failure.code}
-                    %td #{f.occurrenceSummary.firstSeen}
-                    %td #{f.occurrenceSummary.lastSeen}
-                    %td #{f.occurrenceSummary.totalOccurrences}
+                    %td #{e.error.code}
+                    %td #{e.occurrenceSummary.firstSeen}
+                    %td #{e.occurrenceSummary.lastSeen}
+                    %td #{e.occurrenceSummary.totalOccurrences}

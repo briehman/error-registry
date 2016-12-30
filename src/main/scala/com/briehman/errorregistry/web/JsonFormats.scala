@@ -1,4 +1,4 @@
-package com.briehman.failureregistry.web
+package com.briehman.errorregistry.web
 
 import java.net.URI
 import java.sql.{Date, Timestamp}

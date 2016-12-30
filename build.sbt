@@ -6,7 +6,7 @@ lazy val root = (project in file("."))
   .enablePlugins(JettyPlugin)
   .settings(
     organization := "com.briehman",
-    name := "failure-registry",
+    name := "error-registry",
     version := "0.1-SNAPSHOT",
     scalaVersion := "2.11.8",
     libraryDependencies ++= Seq(
