@@ -1,21 +1,41 @@
 - import com.briehman.failureregistry.boundary.FailureSummary
-- attributes("title") = "Failures"
+- attributes("title") = "Error Registry"
 
 -@ var recentFailures: Seq[FailureSummary]
+-@ var mostFrequentFailures: Seq[FailureSummary]
 
 - recentFailures match
     - case Nil =>
         %h1 No recent failures
     - case _ =>
         %table
+            %caption Recent Failures
             %thead
                 %th Code
                 %th First Seen
                 %th Last Seen
                 %th Total occurrences
-            - for (rf <- recentFailures)
+            - for (f <- recentFailures)
                 %tr
-                    %td #{rf.failure.code}
-                    %td #{rf.occurrenceSummary.firstSeen}
-                    %td #{rf.occurrenceSummary.lastSeen}
-                    %td #{rf.occurrenceSummary.totalOccurrences}
+                    %td #{f.failure.code}
+                    %td #{f.occurrenceSummary.firstSeen}
+                    %td #{f.occurrenceSummary.lastSeen}
+                    %td #{f.occurrenceSummary.totalOccurrences}
+
+- mostFrequentFailures match
+    - case Nil =>
+        %h1 No frequent failures
+    - case _ =>
+        %table
+            %caption Frequent Failures
+            %thead
+                %th Code
+                %th First Seen
+                %th Last Seen
+                %th Total occurrences
+            - for (f <- mostFrequentFailures)
+                %tr
+                    %td #{f.failure.code}
+                    %td #{f.occurrenceSummary.firstSeen}
+                    %td #{f.occurrenceSummary.lastSeen}
+                    %td #{f.occurrenceSummary.totalOccurrences}

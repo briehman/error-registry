@@ -7,7 +7,7 @@ import com.briehman.failureregistry.boundary.{FailureOccurrenceSummary, FailureS
 import com.briehman.failureregistry.models.{FailureOccurrence, Failure}
 import org.scalatest.Matchers
 import org.scalatest.path.FunSpec
-import com.briehman.failureregistry.repository.{FailureOccurrenceSummary, InMemoryFailureOccurrenceRepository, InMemoryFailureRepository}
+import com.briehman.failureregistry.repository.{InMemoryFailureOccurrenceRepository, InMemoryFailureRepository}
 
 class GetFailureSummaryInteractorTest extends FunSpec with Matchers {
   val failureRepository = new InMemoryFailureRepository
@@ -32,8 +32,8 @@ class GetFailureSummaryInteractorTest extends FunSpec with Matchers {
         val second = storeFailureAndOccurrence("second", secondTime)
         val third = storeFailureAndOccurrence("third", thirdTime)
         interactor.getUniqueRecentOccurrenceSummaries(startingPoint.minusSeconds(1), 2) shouldBe
-          List(FailureSummary(second, FailureOccurrenceSummary(second.id, secondTime, secondTime, 1)),
-            FailureSummary(third, FailureOccurrenceSummary(third.id, thirdTime, thirdTime, 1)))
+          List(FailureSummary(third, FailureOccurrenceSummary(third.id, thirdTime, thirdTime, 1)),
+            FailureSummary(second, FailureOccurrenceSummary(second.id, secondTime, secondTime, 1)))
       }
 
       it("limits by unique failures and not simply occurrences") {
@@ -44,12 +44,12 @@ class GetFailureSummaryInteractorTest extends FunSpec with Matchers {
         storeOccurrence(startingPoint.plusSeconds(3), second)
         storeOccurrence(startingPoint.plusSeconds(3), second)
         interactor.getUniqueRecentOccurrenceSummaries(startingPoint.minusSeconds(1), 2) shouldBe
-          List(FailureSummary(first, FailureOccurrenceSummary(first.id, startingPoint, startingPoint, 1)),
-            FailureSummary(second, FailureOccurrenceSummary(second.id, startingPoint.plusSeconds(1), startingPoint.plusSeconds(3), 4)))
+          List(FailureSummary(second, FailureOccurrenceSummary(second.id, startingPoint.plusSeconds(1), startingPoint.plusSeconds(3), 4)),
+            FailureSummary(first, FailureOccurrenceSummary(first.id, startingPoint, startingPoint, 1)))
       }
     }
 
-    describe("listing top failures") {
+    describe("listing most frequent failures") {
       it("finds the first occurrence when is the only one") {
         val dt = LocalDateTime.of(LocalDate.of(2016, 1, 1), LocalTime.of(12, 0, 0, 0))
         val selectFailure = storeFailureAndOccurrence("find", dt)

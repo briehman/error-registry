@@ -22,7 +22,11 @@ class HomePageServlet(failureSummaryBoundary: GetFailureSummaryBoundary)
   get("/") {
     contentType = "text/html"
     val recentFailures = failureSummaryBoundary.getUniqueRecentOccurrenceSummaries(LocalDateTime.now().minusMinutes(1), 5)
-    scaml("/WEB-INF/views/home.scaml", "recentFailures" -> recentFailures)
+    val mostFrequentFailures = failureSummaryBoundary.getMostFrequentRecentOccurrencesSummaries(LocalDateTime.now().minusMinutes(1), 5)
+
+    scaml("/WEB-INF/views/home.scaml",
+      "recentFailures" -> recentFailures,
+      "mostFrequentFailures" -> mostFrequentFailures)
   }
 
 }

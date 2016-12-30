@@ -7,7 +7,7 @@ import com.briehman.failureregistry.boundary.FailureOccurrenceSummary
 import com.briehman.failureregistry.models.{Failure, FailureOccurrence}
 
 class InMemoryFailureRepository extends FailureRepository {
-  var codes = Map[String, Failure]()
+  private var codes = Map[String, Failure]()
 
   override def find(primaryKey: Int): Option[Failure] = codes.values.find(_.id == primaryKey)
 
@@ -31,7 +31,7 @@ class InMemoryFailureRepository extends FailureRepository {
 
 class InMemoryFailureOccurrenceRepository(failureRepository: FailureRepository)
   extends FailureOccurrenceRepository {
-  var occurrences = Map[Int, FailureOccurrence]()
+  private var occurrences = Map[Int, FailureOccurrence]()
 
   private implicit def ordered[T <: Timestamp] = new Ordering[T] {
     def compare(x: T, y: T): Int = x compareTo y
@@ -50,7 +50,7 @@ class InMemoryFailureOccurrenceRepository(failureRepository: FailureRepository)
     }
   }
 
-  def findByFailureId(id: Int) = {
+  private def findByFailureId(id: Int) = {
     occurrences.filter(t => t._2.failure_pk == id).values.toList
   }
 
@@ -62,14 +62,14 @@ class InMemoryFailureOccurrenceRepository(failureRepository: FailureRepository)
 
   override def listUniqueRecentOccurrences(since: LocalDateTime, max: Int): Seq[FailureOccurrenceSummary] = {
     getOccurrenceSummariesSince(since)
-      .sortBy(_.lastSeen)
-      .takeRight(max)
+      .sortBy(_.lastSeen)(Ordering[LocalDateTime].reverse)
+      .take(max)
   }
 
   override def listMostFrequentOccurrences(since: LocalDateTime, max: Int): Seq[FailureOccurrenceSummary] = {
     getOccurrenceSummariesSince(since)
-      .sortBy(_.totalOccurrences)
-      .takeRight(max)
+      .sortBy(_.totalOccurrences)(Ordering[Int].reverse)
+      .take(max)
   }
 
   private def getOccurrenceSummariesSince(date: LocalDateTime): List[FailureOccurrenceSummary] = {
