@@ -21,7 +21,7 @@ class GetAppErrorSummaryInteractorTest extends FunSpec with Matchers {
         val selectError = storeErrorAndOccurrence("find", dt)
         storeErrorAndOccurrence("ignore", dt.minusSeconds(1))
         interactor.listRecent(dt.minusSeconds(1), 1) shouldBe
-          List(ErrorSummary(selectError, ErrorOccurrenceSummary(selectError.id, dt, dt, 1, 1), selectError.id))
+          List(ErrorSummary(selectError, ErrorOccurrenceSummary(selectError.id, dt, dt, 1, 1), selectError.id, "find"))
       }
 
       it("respects the limit returning the most recent") {
@@ -32,8 +32,8 @@ class GetAppErrorSummaryInteractorTest extends FunSpec with Matchers {
         val second = storeErrorAndOccurrence("second", secondTime)
         val third = storeErrorAndOccurrence("third", thirdTime)
         interactor.listRecent(startingPoint.minusSeconds(1), 2) shouldBe
-          List(ErrorSummary(third, ErrorOccurrenceSummary(third.id, thirdTime, thirdTime, 1, 1), third.id),
-            ErrorSummary(second, ErrorOccurrenceSummary(second.id, secondTime, secondTime, 1, 1), second.id))
+          List(ErrorSummary(third, ErrorOccurrenceSummary(third.id, thirdTime, thirdTime, 1, 1), third.id, "third"),
+            ErrorSummary(second, ErrorOccurrenceSummary(second.id, secondTime, secondTime, 1, 1), second.id, "second"))
       }
 
       it("limits by unique errors and not simply occurrences") {
@@ -44,8 +44,8 @@ class GetAppErrorSummaryInteractorTest extends FunSpec with Matchers {
         storeOccurrence(startingPoint.plusSeconds(3), second)
         storeOccurrence(startingPoint.plusSeconds(3), second)
         interactor.listRecent(startingPoint.minusSeconds(1), 2) shouldBe
-          List(ErrorSummary(second, ErrorOccurrenceSummary(second.id, startingPoint.plusSeconds(1), startingPoint.plusSeconds(3), 4, 4), second.id),
-            ErrorSummary(first, ErrorOccurrenceSummary(first.id, startingPoint, startingPoint, 1, 1), first.id))
+          List(ErrorSummary(second, ErrorOccurrenceSummary(second.id, startingPoint.plusSeconds(1), startingPoint.plusSeconds(3), 4, 4), second.id, "second"),
+            ErrorSummary(first, ErrorOccurrenceSummary(first.id, startingPoint, startingPoint, 1, 1), first.id, "first"))
       }
     }
 
@@ -54,7 +54,7 @@ class GetAppErrorSummaryInteractorTest extends FunSpec with Matchers {
         val dt = LocalDateTime.of(LocalDate.of(2016, 1, 1), LocalTime.of(12, 0, 0, 0))
         val selectError = storeErrorAndOccurrence("find", dt)
         interactor.listMostFrequent(dt.minusSeconds(1), 1) shouldBe
-          List(ErrorSummary(selectError, ErrorOccurrenceSummary(selectError.id, dt, dt, 1, 1), selectError.id))
+          List(ErrorSummary(selectError, ErrorOccurrenceSummary(selectError.id, dt, dt, 1, 1), selectError.id, "find"))
       }
 
       it("finds the largest number of occurrences even if they are the oldest") {
@@ -65,7 +65,7 @@ class GetAppErrorSummaryInteractorTest extends FunSpec with Matchers {
         }
         storeErrorAndOccurrence("skip", dt.plusSeconds(100))
         interactor.listMostFrequent(dt.minusSeconds(1), 1) shouldBe
-          List(ErrorSummary(selectError, ErrorOccurrenceSummary(selectError.id, dt, dt.plusSeconds(20), 21, 21), selectError.id))
+          List(ErrorSummary(selectError, ErrorOccurrenceSummary(selectError.id, dt, dt.plusSeconds(20), 21, 21), selectError.id, "find"))
       }
     }
 
@@ -78,8 +78,8 @@ class GetAppErrorSummaryInteractorTest extends FunSpec with Matchers {
         val second = storeErrorAndOccurrence("second", secondTime)
         val third = storeErrorAndOccurrence("third", thirdTime)
         interactor.listNew(startingPoint.minusSeconds(1), 2) shouldBe
-          List(ErrorSummary(third, ErrorOccurrenceSummary(third.id, thirdTime, thirdTime, 1, 1), third.id),
-            ErrorSummary(second, ErrorOccurrenceSummary(second.id, secondTime, secondTime, 1, 1), second.id))
+          List(ErrorSummary(third, ErrorOccurrenceSummary(third.id, thirdTime, thirdTime, 1, 1), third.id, "third"),
+            ErrorSummary(second, ErrorOccurrenceSummary(second.id, secondTime, secondTime, 1, 1), second.id, "second"))
       }
 
       it("ignores recent occurrenes of old errors") {
