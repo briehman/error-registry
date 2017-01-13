@@ -3,7 +3,7 @@ package com.briehman.errorregistry.repository
 import java.sql.Timestamp
 import java.time.LocalDateTime
 
-import com.briehman.errorregistry.boundary.ErrorOccurrenceSummary
+import com.briehman.errorregistry.boundary.{ErrorOccurrenceSummary, ErrorSummary}
 import com.briehman.errorregistry.models.{AppError, ErrorOccurrence}
 
 trait ErrorRepository {
@@ -27,6 +27,7 @@ trait ErrorOccurrenceRepository {
   def findByCode(code: String): Seq[ErrorOccurrence]
   def store(occurrence: ErrorOccurrence): ErrorOccurrence
   def listUniqueNew(since: LocalDateTime, max: Int): Seq[ErrorOccurrenceSummary]
+  def listUniqueNewer(since: LocalDateTime, max: Int): Seq[ErrorSummary]
   def listUniqueRecent(since: LocalDateTime, max: Int): Seq[ErrorOccurrenceSummary]
   def listUniqueMostFrequent(since: LocalDateTime, max: Int): Seq[ErrorOccurrenceSummary]
 }

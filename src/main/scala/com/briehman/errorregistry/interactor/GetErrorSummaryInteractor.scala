@@ -10,6 +10,8 @@ class GetErrorSummaryInteractor(errorRepository: ErrorRepository,
   extends GetErrorSummaryBoundary {
 
   override def listNew(since: LocalDateTime, max: Int): Seq[ErrorSummary] = {
+    failureOccurrenceRepository.listUniqueNewer(since, max)
+    println("YEAH")
     mapToFailureOccurrences(failureOccurrenceRepository.listUniqueNew(since, max))
   }
 
