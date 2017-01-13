@@ -34,7 +34,7 @@
                 %th Code
                 %th First Seen
                 %th Last Seen
-                %th Total occurrences
+                %th Recent occurrences
             - for (e <- recentErrors)
                 %tr
                     %td #{e.error.code}
@@ -52,7 +52,7 @@
                 %th Code
                 %th First Seen
                 %th Last Seen
-                %th Total occurrences
+                %th Occurrences this week
             - for (e <- mostFrequentWeeklyErrors)
                 %tr
                     %td #{e.error.code}
@@ -70,7 +70,7 @@
                 %th Code
                 %th First Seen
                 %th Last Seen
-                %th Total occurrences
+                %th Occurrences this month
             - for (e <- mostFrequentMonthlyErrors)
                 %tr
                     %td #{e.error.code}

@@ -3,8 +3,13 @@ package com.briehman.errorregistry.repository
 import java.sql.Timestamp
 import java.time.LocalDateTime
 
+import slick.driver.MySQLDriver.api._
 import com.briehman.errorregistry.boundary.ErrorOccurrenceSummary
 import com.briehman.errorregistry.models.{AppError, ErrorOccurrence}
+import slick.lifted.QueryBase
+
+import scala.concurrent.Await
+import scala.concurrent.duration.Duration
 
 class InMemoryErrorRepository extends ErrorRepository {
   private var codes = Map[String, AppError]()
@@ -29,17 +34,32 @@ class InMemoryErrorRepository extends ErrorRepository {
   override def listCodes: Seq[String] = codes.keys.toSeq
 }
 
+class DatabaseErrorRepository(db: Database) extends ErrorRepository {
+  override def find(id: Int): Option[AppError] = {
+    Await.result(db.run(AppError.table.filter(_.id === id).result.headOption), Duration.Inf)
+  }
+
+  override def find(code: String): Option[AppError] = {
+    Await.result(db.run(AppError.table.filter(_.code === code).result.headOption), Duration.Inf)
+  }
+
+  override def list(ids: Seq[Int]): Seq[AppError] = {
+    Await.result(db.run(AppError.table.result), Duration.Inf)
+  }
+
+  override def store(error: AppError): AppError = {
+    Await.result(db.run(AppError.table += error), Duration.Inf)
+    find(error.code).head
+  }
+
+  override def listCodes: Seq[String] = {
+    Await.result(db.run(AppError.table.map(_.code).result), Duration.Inf)
+  }
+}
+
 class InMemoryErrorOccurrenceRepository(errorRepository: ErrorRepository)
   extends ErrorOccurrenceRepository {
   private var occurrences = Map[Int, ErrorOccurrence]()
-
-  private implicit def ordered[T <: Timestamp] = new Ordering[T] {
-    def compare(x: T, y: T): Int = x compareTo y
-  }
-
-  private implicit def orderedLDT[T <: LocalDateTime] = new Ordering[T] {
-    def compare(x: T, y: T): Int = x compareTo y
-  }
 
   override def find(id: Int): Option[ErrorOccurrence] = occurrences.get(id)
 
@@ -87,8 +107,95 @@ class InMemoryErrorOccurrenceRepository(errorRepository: ErrorRepository)
         val errorOccurrences = occurrences.values.filter(_.error_pk == id)
         val firstSeen = errorOccurrences.minBy(_.date).date
         val lastSeen = errorOccurrences.maxBy(_.date).date
-        ErrorOccurrenceSummary(id, firstSeen.toLocalDateTime, lastSeen.toLocalDateTime, errorOccurrences.size)
+        ErrorOccurrenceSummary(id, firstSeen.toLocalDateTime, lastSeen.toLocalDateTime, errorOccurrences.size, errorOccurrences.size)
       }
       .toList
   }
+}
+
+class DatabaseErrorOccurrenceRepository(db: Database) extends ErrorOccurrenceRepository {
+  override def find(id: Int): Option[ErrorOccurrence] = {
+    Await.result(db.run(ErrorOccurrence.table.filter(_.id === id).result.headOption), Duration.Inf)
+  }
+
+  override def findByCode(code: String): Seq[ErrorOccurrence] = {
+    val occurrences = for {
+      o <- ErrorOccurrence.table
+      e <- o.appError if e.code === code
+    } yield o
+
+    Await.result(db.run(occurrences.result), Duration.Inf)
+  }
+
+  override def store(occurrence: ErrorOccurrence): ErrorOccurrence = {
+    val insert = ErrorOccurrence.table returning ErrorOccurrence.table.map(_.id) into ((item, id) => item.copy(id = id))
+    val id = Await.result(db.run(ErrorOccurrence.table += occurrence), Duration.Inf)
+    find(id).head
+  }
+
+  override def listUniqueNew(since: LocalDateTime, max: Int): Seq[ErrorOccurrenceSummary] = {
+    val uniqueErrorsSince = getUniqueErrorsSince(since)
+    val uniqueNewErrorsSince = uniqueErrorsSince
+      .filter(_._3 > Timestamp.valueOf(since))
+      .sortBy(r => (r._2.desc, r._3.desc))
+
+    Await.result(db.run(uniqueNewErrorsSince.take(max).result), Duration.Inf).map { r =>
+      ErrorOccurrenceSummary(r._1, r._2.get.toLocalDateTime, r._3.get.toLocalDateTime, -1, r._4)
+    }
+  }
+
+  override def listUniqueRecent(since: LocalDateTime, max: Int): Seq[ErrorOccurrenceSummary] = {
+    val uniqueErrors = getUniqueErrorsSince(since)
+
+    val errorsSinceWithRecentCount = for {
+      (recent, all) <- ErrorOccurrence.table
+        .filter(_.date >= Timestamp.valueOf(since))
+        .groupBy(_.errorId)
+        .map { case (errorId, group) => (errorId, group.length) }
+        .join(ErrorOccurrence.table) on (_._1 === _.errorId)
+      e <- all.appError
+    } yield (e, all, recent._2)
+
+    val uniqueRecentErrors = errorsSinceWithRecentCount
+      .groupBy(_._1.id)
+      .map { case (errorId, errorResults) =>
+        (errorId, errorResults.map(_._2.date).min, errorResults.map(_._2.date).max, errorResults.map(_._3).sum)
+      }
+      .sortBy(_._2.desc)
+      .take(max)
+
+    println(uniqueRecentErrors.result.statements)
+    Await.result(db.run(uniqueRecentErrors.result), Duration.Inf).map { r =>
+      ErrorOccurrenceSummary(r._1, r._2.get.toLocalDateTime, r._3.get.toLocalDateTime, -1, r._4.get)
+    }
+  }
+
+  override def listUniqueMostFrequent(since: LocalDateTime, max: Int): Seq[ErrorOccurrenceSummary] = {
+    val uniqueErrors = getUniqueErrorsSince(since)
+    val mostFrequent = uniqueErrors.sortBy(r => (r._4.desc, r._3.desc))
+    Await.result(db.run(uniqueErrors.take(max).result), Duration.Inf).map { r =>
+      ErrorOccurrenceSummary(r._1, r._2.get.toLocalDateTime, r._3.get.toLocalDateTime, -1, r._4)
+    }
+  }
+
+  private def getUniqueErrorsSince(since: LocalDateTime) = {
+    val distinctErrors = for {
+      o <- ErrorOccurrence.table if o.date >= Timestamp.valueOf(since)
+      e <- o.appError
+    } yield e.id
+
+    val uniqueErrorsSince = (for {
+      o <- ErrorOccurrence.table if o.errorId in distinctErrors
+    } yield o)
+      .groupBy(_.errorId)
+      .map { case (errorId, occurrences) =>
+        (errorId, occurrences.map(_.date).min, occurrences.map(_.date).max, occurrences.length)
+      }
+    uniqueErrorsSince
+  }
+
+  case class ErrorOccurrenceSummaryResult(errorId: Rep[Int],
+                                          firstOccurrenceDate: Rep[Option[Timestamp]],
+                                          latestOccurrenceDate: Rep[Option[Timestamp]],
+                                          errorCountSince: Rep[Int])
 }

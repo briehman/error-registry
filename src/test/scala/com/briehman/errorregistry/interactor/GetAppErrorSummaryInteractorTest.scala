@@ -21,7 +21,7 @@ class GetAppErrorSummaryInteractorTest extends FunSpec with Matchers {
         val selectError = storeErrorAndOccurrence("find", dt)
         storeErrorAndOccurrence("ignore", dt.minusSeconds(1))
         interactor.listRecent(dt.minusSeconds(1), 1) shouldBe
-          List(ErrorSummary(selectError, ErrorOccurrenceSummary(selectError.id, dt, dt, 1)))
+          List(ErrorSummary(selectError, ErrorOccurrenceSummary(selectError.id, dt, dt, 1, 1)))
       }
 
       it("respects the limit returning the most recent") {
@@ -32,8 +32,8 @@ class GetAppErrorSummaryInteractorTest extends FunSpec with Matchers {
         val second = storeErrorAndOccurrence("second", secondTime)
         val third = storeErrorAndOccurrence("third", thirdTime)
         interactor.listRecent(startingPoint.minusSeconds(1), 2) shouldBe
-          List(ErrorSummary(third, ErrorOccurrenceSummary(third.id, thirdTime, thirdTime, 1)),
-            ErrorSummary(second, ErrorOccurrenceSummary(second.id, secondTime, secondTime, 1)))
+          List(ErrorSummary(third, ErrorOccurrenceSummary(third.id, thirdTime, thirdTime, 1, 1)),
+            ErrorSummary(second, ErrorOccurrenceSummary(second.id, secondTime, secondTime, 1, 1)))
       }
 
       it("limits by unique errors and not simply occurrences") {
@@ -44,8 +44,8 @@ class GetAppErrorSummaryInteractorTest extends FunSpec with Matchers {
         storeOccurrence(startingPoint.plusSeconds(3), second)
         storeOccurrence(startingPoint.plusSeconds(3), second)
         interactor.listRecent(startingPoint.minusSeconds(1), 2) shouldBe
-          List(ErrorSummary(second, ErrorOccurrenceSummary(second.id, startingPoint.plusSeconds(1), startingPoint.plusSeconds(3), 4)),
-            ErrorSummary(first, ErrorOccurrenceSummary(first.id, startingPoint, startingPoint, 1)))
+          List(ErrorSummary(second, ErrorOccurrenceSummary(second.id, startingPoint.plusSeconds(1), startingPoint.plusSeconds(3), 4, 4)),
+            ErrorSummary(first, ErrorOccurrenceSummary(first.id, startingPoint, startingPoint, 1, 1)))
       }
     }
 
@@ -54,7 +54,7 @@ class GetAppErrorSummaryInteractorTest extends FunSpec with Matchers {
         val dt = LocalDateTime.of(LocalDate.of(2016, 1, 1), LocalTime.of(12, 0, 0, 0))
         val selectError = storeErrorAndOccurrence("find", dt)
         interactor.listMostFrequent(dt.minusSeconds(1), 1) shouldBe
-          List(ErrorSummary(selectError, ErrorOccurrenceSummary(selectError.id, dt, dt, 1)))
+          List(ErrorSummary(selectError, ErrorOccurrenceSummary(selectError.id, dt, dt, 1, 1)))
       }
 
       it("finds the largest number of occurrences even if they are the oldest") {
@@ -65,7 +65,7 @@ class GetAppErrorSummaryInteractorTest extends FunSpec with Matchers {
         }
         storeErrorAndOccurrence("skip", dt.plusSeconds(100))
         interactor.listMostFrequent(dt.minusSeconds(1), 1) shouldBe
-          List(ErrorSummary(selectError, ErrorOccurrenceSummary(selectError.id, dt, dt.plusSeconds(20), 21)))
+          List(ErrorSummary(selectError, ErrorOccurrenceSummary(selectError.id, dt, dt.plusSeconds(20), 21, 21)))
       }
     }
 
@@ -78,8 +78,8 @@ class GetAppErrorSummaryInteractorTest extends FunSpec with Matchers {
         val second = storeErrorAndOccurrence("second", secondTime)
         val third = storeErrorAndOccurrence("third", thirdTime)
         interactor.listNew(startingPoint.minusSeconds(1), 2) shouldBe
-          List(ErrorSummary(third, ErrorOccurrenceSummary(third.id, thirdTime, thirdTime, 1)),
-            ErrorSummary(second, ErrorOccurrenceSummary(second.id, secondTime, secondTime, 1)))
+          List(ErrorSummary(third, ErrorOccurrenceSummary(third.id, thirdTime, thirdTime, 1, 1)),
+            ErrorSummary(second, ErrorOccurrenceSummary(second.id, secondTime, secondTime, 1, 1)))
       }
 
       it("ignores recent occurrenes of old errors") {
@@ -93,12 +93,12 @@ class GetAppErrorSummaryInteractorTest extends FunSpec with Matchers {
   }
 
   def storeErrorAndOccurrence(errorCode: String, dt: LocalDateTime): AppError = {
-    val selectError = errorRepository.store(new AppError(-1, errorCode))
+    val selectError = errorRepository.store(new AppError(code = errorCode))
     storeOccurrence(dt, selectError)
     selectError
   }
 
   def storeOccurrence(dt: LocalDateTime, selectError: AppError): ErrorOccurrence = {
-    occurrenceRepository.store(new ErrorOccurrence(-1, selectError.id, Timestamp.valueOf(dt)))
+    occurrenceRepository.store(ErrorOccurrence(error_pk = selectError.id, date = Timestamp.valueOf(dt)))
   }
 }

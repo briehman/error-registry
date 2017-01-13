@@ -27,7 +27,8 @@ lazy val root = (project in file("."))
       "org.scala-lang.modules" % "scala-xml_2.11" % "1.0.5",
       "org.json4s" %% "json4s-jackson" % "3.3.0",
       "com.github.sstone" % "amqp-client_2.11" % "1.5",
-      "com.typesafe.akka" %% "akka-actor" % "2.4.0"
+      "com.typesafe.akka" %% "akka-actor" % "2.4.0",
+      "mysql" % "mysql-connector-java" % "5.1.32"
     )
   )
 

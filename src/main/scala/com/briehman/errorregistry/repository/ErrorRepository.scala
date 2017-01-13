@@ -1,5 +1,6 @@
 package com.briehman.errorregistry.repository
 
+import java.sql.Timestamp
 import java.time.LocalDateTime
 
 import com.briehman.errorregistry.boundary.ErrorOccurrenceSummary
@@ -14,6 +15,14 @@ trait ErrorRepository {
 }
 
 trait ErrorOccurrenceRepository {
+  protected implicit def ordered[T <: Timestamp] = new Ordering[T] {
+    def compare(x: T, y: T): Int = x compareTo y
+  }
+
+  protected implicit def orderedLDT[T <: LocalDateTime] = new Ordering[T] {
+    def compare(x: T, y: T): Int = x compareTo y
+  }
+
   def find(id: Int): Option[ErrorOccurrence]
   def findByCode(code: String): Seq[ErrorOccurrence]
   def store(occurrence: ErrorOccurrence): ErrorOccurrence

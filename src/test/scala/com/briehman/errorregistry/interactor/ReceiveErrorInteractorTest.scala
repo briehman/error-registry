@@ -11,10 +11,10 @@ import org.mockito.Mockito._
 import org.scalatest.Matchers
 import org.scalatest.mockito.MockitoSugar
 
-class ReceiveAppErrorInteractorTest extends org.scalatest.path.FunSpec with Matchers with MockitoSugar {
+class ReceiveErrorInteractorTest extends org.scalatest.path.FunSpec with Matchers with MockitoSugar {
   private val notificationService = mock[NotificationService]
 
-  describe("ReceiveAppErrorInteractor") {
+  describe("ReceiveErrorInteractor") {
     val errorRepository = new InMemoryErrorRepository
     val occurrenceRepository = new InMemoryErrorOccurrenceRepository(errorRepository)
     val interactor = new ReceiveErrorInteractor(errorRepository, occurrenceRepository, notificationService)
@@ -33,7 +33,7 @@ class ReceiveAppErrorInteractorTest extends org.scalatest.path.FunSpec with Matc
 
     describe("receiving a new errorMessage") {
       val msg = buildMessage("newError")
-      val error = AppError(msg)
+      val error = AppError(code = msg.code)
       val response = interactor.receiveError(msg)
 
       it("responds with a ReceivedOk") {
@@ -41,7 +41,7 @@ class ReceiveAppErrorInteractorTest extends org.scalatest.path.FunSpec with Matc
       }
 
       it("persists the new errorMessage") {
-        val stored = errorRepository.find(error.code)
+        val stored = errorRepository.find("newError")
         stored shouldNot be(None)
         stored.get.code shouldBe "newError"
       }
@@ -50,7 +50,11 @@ class ReceiveAppErrorInteractorTest extends org.scalatest.path.FunSpec with Matc
         verify(notificationService, times(1)).notify(error)
       }
 
-      it("persists the occurrence") {
+      it("stores the message date") {
+        response.asInstanceOf[ReceivedOk].occurrence.date.toInstant shouldBe msg.occurrence.date.toInstant
+      }
+
+      it("persists the occurrence by the given code") {
         val stored = errorRepository.find(error.code)
         occurrenceRepository.findByCode(stored.get.code).size shouldBe 1
       }
@@ -58,7 +62,7 @@ class ReceiveAppErrorInteractorTest extends org.scalatest.path.FunSpec with Matc
 
     describe("receiving a previously stored errorMessage") {
       val msg = buildMessage("existingError")
-      val error = AppError(msg)
+      val error = AppError(code = msg.code)
       val existingError = errorRepository.store(error)
       val response = interactor.receiveError(msg)
 

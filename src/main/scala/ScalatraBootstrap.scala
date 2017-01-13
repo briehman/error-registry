@@ -3,7 +3,7 @@ import javax.servlet.ServletContext
 import akka.actor.ActorSystem
 import com.briehman.errorregistry.dispatcher.RabbitMqReceiveErrorDispatcher
 import com.briehman.errorregistry.interactor.{GetErrorSummaryInteractor, ReceiveErrorInteractor}
-import com.briehman.errorregistry.repository.{InMemoryErrorOccurrenceRepository, InMemoryErrorRepository}
+import com.briehman.errorregistry.repository.{DatabaseErrorOccurrenceRepository, DatabaseErrorRepository, InMemoryErrorOccurrenceRepository, InMemoryErrorRepository}
 import com.briehman.errorregistry.service.FakeNotificationService
 import com.briehman.errorregistry.web.HomePageServlet
 import com.briehman.errorregistry.web.api.ErrorApiResource
@@ -12,13 +12,17 @@ import org.scalatra.LifeCycle
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
+import slick.driver.MySQLDriver.api._
 
 class ScalatraBootstrap extends LifeCycle {
   val connFactory = new ConnectionFactory()
   connFactory.setUri("amqp://guest:guest@localhost/%2F")
 
-  implicit val errorRepository = new InMemoryErrorRepository
-  implicit val occurrenceRepository = new InMemoryErrorOccurrenceRepository(errorRepository)
+  val db = Database.forConfig("mysql")
+
+  val errorRepository = new DatabaseErrorRepository(db)
+  val occurrenceRepository = new DatabaseErrorOccurrenceRepository(db)
+
   val notificationService = new FakeNotificationService
   var system: ActorSystem = ActorSystem("receiveSystem")
 
