@@ -25,7 +25,7 @@ class GetErrorSummaryInteractor(errorRepository: ErrorRepository,
     occurrences
       .flatMap { o =>
         errorRepository.find(o.error_pk).map { f =>
-          ErrorSummary(f, o)
+          ErrorSummary(f, o, o.error_pk)
         }
       }
   }
