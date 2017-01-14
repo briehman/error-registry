@@ -12,7 +12,7 @@ import com.briehman.errorregistry.repository.{InMemoryErrorOccurrenceRepository,
 class GetAppErrorSummaryInteractorTest extends FunSpec with Matchers {
   val errorRepository = new InMemoryErrorRepository
   val occurrenceRepository = new InMemoryErrorOccurrenceRepository(errorRepository)
-  val interactor = new GetErrorSummaryInteractor(errorRepository, occurrenceRepository)
+  val interactor = new GetErrorSummaryInteractor(occurrenceRepository)
 
   describe("GetErrorSummaryInteractor") {
     describe("listing recent errors after a timestamp") {

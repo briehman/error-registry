@@ -101,10 +101,14 @@ class InMemoryErrorOccurrenceRepository(errorRepository: ErrorRepository)
       }
   }
 
-  override def listUniqueMostFrequent(since: LocalDateTime, max: Int): Seq[ErrorOccurrenceSummary] = {
+  override def listUniqueMostFrequent(since: LocalDateTime, max: Int): Seq[ErrorSummary] = {
     getOccurrenceSummariesSince(since)
       .sortBy(_.totalOccurrences)(Ordering[Int].reverse)
       .take(max)
+      .map { t =>
+        val error = errorRepository.find(t.error_pk)
+        ErrorSummary(t.error_pk, error.get.code, t)
+      }
   }
 
   private def getOccurrenceSummariesSince(date: LocalDateTime): List[ErrorOccurrenceSummary] = {
@@ -148,21 +152,18 @@ class DatabaseErrorOccurrenceRepository(db: Database) extends ErrorOccurrenceRep
       .take(max)
 
     Await.result(db.run(uniqueNewErrorsSince.result), Duration.Inf).map { case (errorId, minDate, maxDate, sinceErrorCount, totalErrorCount) =>
-      ErrorSummary(1, "test", ErrorOccurrenceSummary(errorId, minDate.get.toLocalDateTime, maxDate.get.toLocalDateTime, sinceErrorCount, totalErrorCount))
+      ErrorSummary(1, "FAKE", ErrorOccurrenceSummary(errorId, minDate.get.toLocalDateTime, maxDate.get.toLocalDateTime, sinceErrorCount, totalErrorCount))
     }
   }
-
 
   override def listUniqueRecent(since: LocalDateTime, max: Int): Seq[ErrorSummary] = {
     val uniqueErrorsSince = getErrorsSinceWithRecentCount(since)
       .filter { case (_, minDate, _, _, _) => minDate >= Timestamp.valueOf(since) }
-      .sortBy(_._2.desc)
+      .sortBy { case (_, minDate, _, _, _) => minDate.desc }
       .take(max)
 
-    println(uniqueErrorsSince.result.statements)
-
     Await.result(db.run(uniqueErrorsSince.result), Duration.Inf).map { case (errorId, minDate, maxDate, sinceErrorCount, totalErrorCount) =>
-      ErrorSummary(1, "test", ErrorOccurrenceSummary(errorId, minDate.get.toLocalDateTime, maxDate.get.toLocalDateTime, sinceErrorCount, totalErrorCount))
+      ErrorSummary(1, "FAKE", ErrorOccurrenceSummary(errorId, minDate.get.toLocalDateTime, maxDate.get.toLocalDateTime, sinceErrorCount, totalErrorCount))
     }
   }
 
@@ -181,11 +182,13 @@ class DatabaseErrorOccurrenceRepository(db: Database) extends ErrorOccurrenceRep
       }
   }
 
-  override def listUniqueMostFrequent(since: LocalDateTime, max: Int): Seq[ErrorOccurrenceSummary] = {
-    val uniqueErrors = getUniqueErrorsSince(since)
-    val mostFrequent = uniqueErrors.sortBy(r => (r._4.desc, r._3.desc))
-    Await.result(db.run(uniqueErrors.take(max).result), Duration.Inf).map { r =>
-      ErrorOccurrenceSummary(r._1, r._2.get.toLocalDateTime, r._3.get.toLocalDateTime, -1, r._4)
+  override def listUniqueMostFrequent(since: LocalDateTime, max: Int): Seq[ErrorSummary] = {
+    val uniqueErrorsSince = getErrorsSinceWithRecentCount(since)
+      .sortBy { case (_, _, _, _, totalErrorCount) => totalErrorCount.desc }
+      .take(max)
+
+    Await.result(db.run(uniqueErrorsSince.result), Duration.Inf).map { case (errorId, minDate, maxDate, sinceErrorCount, totalErrorCount) =>
+      ErrorSummary(1, "FAKE", ErrorOccurrenceSummary(errorId, minDate.get.toLocalDateTime, maxDate.get.toLocalDateTime, sinceErrorCount, totalErrorCount))
     }
   }
 

@@ -32,7 +32,7 @@ class ScalatraBootstrap extends LifeCycle {
     notificationService
   )
 
-  val errorSummaryInteractor = new GetErrorSummaryInteractor(errorRepository, occurrenceRepository)
+  val errorSummaryInteractor = new GetErrorSummaryInteractor(occurrenceRepository)
 
   val receiveDispatcher = new RabbitMqReceiveErrorDispatcher(system, connFactory, receiveInteractor)
 
