@@ -16,12 +16,14 @@
                 %th Code
                 %th First Seen
                 %th Last Seen
+                %th Recent occurrences
                 %th Total occurrences
             - for (e <- newErrors)
                 %tr
-                    %td #{e.error.code}
+                    %td #{e.code}
                     %td #{e.occurrenceSummary.firstSeen}
                     %td #{e.occurrenceSummary.lastSeen}
+                    %td #{e.occurrenceSummary.recentOccurrences}
                     %td #{e.occurrenceSummary.totalOccurrences}
 
 - recentErrors match
@@ -35,11 +37,13 @@
                 %th First Seen
                 %th Last Seen
                 %th Recent occurrences
+                %th Total occurrences
             - for (e <- recentErrors)
                 %tr
-                    %td #{e.error.code}
+                    %td #{e.code}
                     %td #{e.occurrenceSummary.firstSeen}
                     %td #{e.occurrenceSummary.lastSeen}
+                    %td #{e.occurrenceSummary.recentOccurrences}
                     %td #{e.occurrenceSummary.totalOccurrences}
 
 - mostFrequentWeeklyErrors match
@@ -53,11 +57,13 @@
                 %th First Seen
                 %th Last Seen
                 %th Occurrences this week
+                %th Total occurrences
             - for (e <- mostFrequentWeeklyErrors)
                 %tr
-                    %td #{e.error.code}
+                    %td #{e.code}
                     %td #{e.occurrenceSummary.firstSeen}
                     %td #{e.occurrenceSummary.lastSeen}
+                    %td #{e.occurrenceSummary.recentOccurrences}
                     %td #{e.occurrenceSummary.totalOccurrences}
 
 - mostFrequentMonthlyErrors match
@@ -71,9 +77,11 @@
                 %th First Seen
                 %th Last Seen
                 %th Occurrences this month
+                %th Total occurrences
             - for (e <- mostFrequentMonthlyErrors)
                 %tr
-                    %td #{e.error.code}
+                    %td #{e.code}
                     %td #{e.occurrenceSummary.firstSeen}
                     %td #{e.occurrenceSummary.lastSeen}
+                    %td #{e.occurrenceSummary.recentOccurrences}
                     %td #{e.occurrenceSummary.totalOccurrences}

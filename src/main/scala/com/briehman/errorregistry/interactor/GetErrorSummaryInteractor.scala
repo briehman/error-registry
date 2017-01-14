@@ -10,13 +10,11 @@ class GetErrorSummaryInteractor(errorRepository: ErrorRepository,
   extends GetErrorSummaryBoundary {
 
   override def listNew(since: LocalDateTime, max: Int): Seq[ErrorSummary] = {
-    failureOccurrenceRepository.listUniqueNewer(since, max)
-    println("YEAH")
-    mapToFailureOccurrences(failureOccurrenceRepository.listUniqueNew(since, max))
+    failureOccurrenceRepository.listUniqueNew(since, max)
   }
 
   override def listRecent(since: LocalDateTime, max: Int): Seq[ErrorSummary] = {
-    mapToFailureOccurrences(failureOccurrenceRepository.listUniqueRecent(since, max))
+    failureOccurrenceRepository.listUniqueRecent(since, max)
   }
 
   override def listMostFrequent(since: LocalDateTime, max: Int): Seq[ErrorSummary] = {
@@ -27,7 +25,7 @@ class GetErrorSummaryInteractor(errorRepository: ErrorRepository,
     occurrences
       .flatMap { o =>
         errorRepository.find(o.error_pk).map { f =>
-          ErrorSummary(f, o, o.error_pk, f.code)
+          ErrorSummary(o.error_pk, f.code, o)
         }
       }
   }

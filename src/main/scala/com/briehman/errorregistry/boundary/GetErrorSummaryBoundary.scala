@@ -12,7 +12,7 @@ trait GetErrorSummaryBoundary {
   def listMostFrequent(since: LocalDateTime, max: Int): Seq[ErrorSummary]
 }
 
-case class ErrorSummary(error: AppError, occurrenceSummary: ErrorOccurrenceSummary, errorId: Int, code: String)
+case class ErrorSummary(errorId: Int, code: String, occurrenceSummary: ErrorOccurrenceSummary)
 
 
 case class ErrorOccurrenceSummary(error_pk: Int,

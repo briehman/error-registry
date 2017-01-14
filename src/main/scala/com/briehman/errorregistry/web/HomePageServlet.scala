@@ -21,7 +21,8 @@ class HomePageServlet(errorSummaryBoundary: GetErrorSummaryBoundary)
 
   get("/") {
     contentType = "text/html"
-    val newErrors = errorSummaryBoundary.listNew(LocalDateTime.now().minusWeeks(1), 5)
+    // TODO go back to 1 week
+    val newErrors = errorSummaryBoundary.listNew(LocalDateTime.now().minusWeeks(2), 5)
     val recentErrors = errorSummaryBoundary.listRecent(LocalDateTime.now().minusWeeks(1), 5)
     val mostFrequentWeeklyErrors = errorSummaryBoundary.listMostFrequent(LocalDateTime.now().minusWeeks(1), 10)
     val mostFrequentMonthlyErrors = errorSummaryBoundary.listMostFrequent(LocalDateTime.now().minusMonths(1), 10)

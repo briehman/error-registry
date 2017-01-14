@@ -59,9 +59,9 @@ class DatabaseErrorRepository(db: Database) extends ErrorRepository {
 
 class InMemoryErrorOccurrenceRepository(errorRepository: ErrorRepository)
   extends ErrorOccurrenceRepository {
-  private var occurrences = Map[Int, ErrorOccurrence]()
+  private var occurrencesById = Map[Int, ErrorOccurrence]()
 
-  override def find(id: Int): Option[ErrorOccurrence] = occurrences.get(id)
+  override def find(id: Int): Option[ErrorOccurrence] = occurrencesById.get(id)
 
   override def findByCode(code: String): Seq[ErrorOccurrence] = {
     errorRepository.find(code) match {
@@ -71,37 +71,34 @@ class InMemoryErrorOccurrenceRepository(errorRepository: ErrorRepository)
   }
 
   private def findById(id: Int) = {
-    occurrences.filter(t => t._2.error_pk == id).values.toList
+    occurrencesById.filter(t => t._2.error_pk == id).values.toList
   }
 
   override def store(occurrence: ErrorOccurrence): ErrorOccurrence = {
-    val stored = occurrence.copy(id = occurrences.size)
-    occurrences = occurrences + (stored.id -> stored)
+    val stored = occurrence.copy(id = occurrencesById.size)
+    occurrencesById = occurrencesById + (stored.id -> stored)
     stored
   }
 
-  override def listUniqueNew(since: LocalDateTime, max: Int): Seq[ErrorOccurrenceSummary] = {
+  override def listUniqueNew(since: LocalDateTime, max: Int): Seq[ErrorSummary] = {
     getOccurrenceSummariesSince(since)
       .filter(o => o.firstSeen.isAfter(since))
       .sortBy(_.firstSeen)(Ordering[LocalDateTime].reverse)
       .take(max)
+      .map { t =>
+        val error = errorRepository.find(t.error_pk)
+        ErrorSummary(t.error_pk, error.get.code, t)
+      }
   }
 
-  override def listUniqueNewer(since: LocalDateTime, max: Int): Seq[ErrorSummary] = {
-    val take = getOccurrenceSummariesSince(since)
-      .filter(o => o.firstSeen.isAfter(since))
-      .sortBy(_.firstSeen)(Ordering[LocalDateTime].reverse)
-      .take(max)
-    take.map { t =>
-      val error = errorRepository.find(t.error_pk)
-      ErrorSummary(error.get, t, t.error_pk, error.get.code)
-    }
-  }
-
-  override def listUniqueRecent(since: LocalDateTime, max: Int): Seq[ErrorOccurrenceSummary] = {
+  override def listUniqueRecent(since: LocalDateTime, max: Int): Seq[ErrorSummary] = {
     getOccurrenceSummariesSince(since)
       .sortBy(_.lastSeen)(Ordering[LocalDateTime].reverse)
       .take(max)
+      .map { t =>
+        val error = errorRepository.find(t.error_pk)
+        ErrorSummary(t.error_pk, error.get.code, t)
+      }
   }
 
   override def listUniqueMostFrequent(since: LocalDateTime, max: Int): Seq[ErrorOccurrenceSummary] = {
@@ -111,14 +108,14 @@ class InMemoryErrorOccurrenceRepository(errorRepository: ErrorRepository)
   }
 
   private def getOccurrenceSummariesSince(date: LocalDateTime): List[ErrorOccurrenceSummary] = {
-    occurrences
+    occurrencesById
       .filter { case (id, occurrence) => occurrence.date.toLocalDateTime.isAfter(date) }
       .groupBy { case (id, occurrence) => occurrence.error_pk }
       .map { case (id, occurrenceMap) =>
-        val errorOccurrences = occurrences.values.filter(_.error_pk == id)
+        val errorOccurrences = occurrencesById.values.filter(_.error_pk == id)
         val firstSeen = errorOccurrences.minBy(_.date).date
         val lastSeen = errorOccurrences.maxBy(_.date).date
-        ErrorOccurrenceSummary(id, firstSeen.toLocalDateTime, lastSeen.toLocalDateTime, errorOccurrences.size, errorOccurrences.size)
+        ErrorOccurrenceSummary(id, firstSeen.toLocalDateTime, lastSeen.toLocalDateTime, errorOccurrences.size, occurrencesById.values.count(_.error_pk == id))
       }
       .toList
   }
@@ -144,38 +141,28 @@ class DatabaseErrorOccurrenceRepository(db: Database) extends ErrorOccurrenceRep
     find(id).head
   }
 
-  override def listUniqueNew(since: LocalDateTime, max: Int): Seq[ErrorOccurrenceSummary] = {
-    val uniqueNewErrorsSince = getUniqueErrorsSince(since)
-      .filter(_._3 > Timestamp.valueOf(since))
-      .sortBy(r => (r._2.desc, r._3.desc))
+  override def listUniqueNew(since: LocalDateTime, max: Int): Seq[ErrorSummary] = {
+    val uniqueNewErrorsSince = getErrorsSinceWithRecentCount(since)
+      .filter { case (_, minDate, _, _, _) => minDate >= Timestamp.valueOf(since) }
+      .sortBy { case (_, minDate, _, _, _) => minDate.desc }
+      .take(max)
 
-    Await.result(db.run(uniqueNewErrorsSince.take(max).result), Duration.Inf).map { r =>
-      ErrorOccurrenceSummary(r._1, r._2.get.toLocalDateTime, r._3.get.toLocalDateTime, -1, r._4)
+    Await.result(db.run(uniqueNewErrorsSince.result), Duration.Inf).map { case (errorId, minDate, maxDate, sinceErrorCount, totalErrorCount) =>
+      ErrorSummary(1, "test", ErrorOccurrenceSummary(errorId, minDate.get.toLocalDateTime, maxDate.get.toLocalDateTime, sinceErrorCount, totalErrorCount))
     }
   }
 
-  override def listUniqueNewer(since: LocalDateTime, max: Int): Seq[ErrorSummary] = {
+
+  override def listUniqueRecent(since: LocalDateTime, max: Int): Seq[ErrorSummary] = {
     val uniqueErrorsSince = getErrorsSinceWithRecentCount(since)
-      .filter { case (_, minDate, _, _) => minDate >= Timestamp.valueOf(since) }
+      .filter { case (_, minDate, _, _, _) => minDate >= Timestamp.valueOf(since) }
       .sortBy(_._2.desc)
       .take(max)
 
     println(uniqueErrorsSince.result.statements)
 
-    Await.result(db.run(uniqueErrorsSince.result), Duration.Inf).map { case (errorId, minDate, maxDate, errorCount) =>
-      ErrorSummary(null, ErrorOccurrenceSummary(errorId, minDate.get.toLocalDateTime, maxDate.get.toLocalDateTime, -1, errorCount.get), 1, "test")
-    }
-  }
-
-
-  override def listUniqueRecent(since: LocalDateTime, max: Int): Seq[ErrorOccurrenceSummary] = {
-    val uniqueRecentErrors = getErrorsSinceWithRecentCount(since)
-      .sortBy(_._2.desc)
-      .take(max)
-
-    println(uniqueRecentErrors.result.statements)
-    Await.result(db.run(uniqueRecentErrors.result), Duration.Inf).map { case (errorId, minDate, maxDate, errorCount) =>
-      ErrorOccurrenceSummary(errorId, minDate.get.toLocalDateTime, maxDate.get.toLocalDateTime, -1, errorCount.get)
+    Await.result(db.run(uniqueErrorsSince.result), Duration.Inf).map { case (errorId, minDate, maxDate, sinceErrorCount, totalErrorCount) =>
+      ErrorSummary(1, "test", ErrorOccurrenceSummary(errorId, minDate.get.toLocalDateTime, maxDate.get.toLocalDateTime, sinceErrorCount, totalErrorCount))
     }
   }
 
@@ -190,7 +177,7 @@ class DatabaseErrorOccurrenceRepository(db: Database) extends ErrorOccurrenceRep
     } yield (e, all, recent._2))
       .groupBy(_._1.id)
       .map { case (errorId, errorResults) =>
-        (errorId, errorResults.map(_._2.date).min, errorResults.map(_._2.date).max, errorResults.map(_._3).sum)
+        (errorId, errorResults.map(_._2.date).min, errorResults.map(_._2.date).max, errorResults.map(_._3).length, errorResults.length)
       }
   }
 
