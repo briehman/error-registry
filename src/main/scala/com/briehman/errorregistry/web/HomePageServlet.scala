@@ -23,8 +23,8 @@ class HomePageServlet(errorSummaryBoundary: GetErrorSummaryBoundary)
     contentType = "text/html"
     // TODO go back to 1 week
     val newErrors = errorSummaryBoundary.listNew(LocalDateTime.now().minusWeeks(2), 5)
-    val recentErrors = errorSummaryBoundary.listRecent(LocalDateTime.now().minusWeeks(1), 5)
-    val mostFrequentWeeklyErrors = errorSummaryBoundary.listMostFrequent(LocalDateTime.now().minusWeeks(1), 10)
+    val recentErrors = errorSummaryBoundary.listRecent(LocalDateTime.now().minusWeeks(2), 5)
+    val mostFrequentWeeklyErrors = errorSummaryBoundary.listMostFrequent(LocalDateTime.now().minusWeeks(2), 10)
     val mostFrequentMonthlyErrors = errorSummaryBoundary.listMostFrequent(LocalDateTime.now().minusMonths(1), 10)
 
     scaml("/WEB-INF/views/home.scaml",
