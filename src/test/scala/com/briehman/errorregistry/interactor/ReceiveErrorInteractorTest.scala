@@ -5,7 +5,7 @@ import java.util.Date
 import com.briehman.errorregistry.boundary.{ReceiveFailed, ReceivedOk}
 import com.briehman.errorregistry.message.{AppErrorMessage, ErrorOccurrenceMessage, RequestInformationMessage}
 import com.briehman.errorregistry.models.AppError
-import com.briehman.errorregistry.repository.{InMemoryErrorOccurrenceRepository, InMemoryErrorRepository}
+import com.briehman.errorregistry.repository.memory.{InMemoryErrorOccurrenceRepository, InMemoryErrorRepository}
 import com.briehman.errorregistry.service.NotificationService
 import org.mockito.Mockito._
 import org.scalatest.Matchers

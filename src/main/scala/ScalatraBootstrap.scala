@@ -3,16 +3,16 @@ import javax.servlet.ServletContext
 import akka.actor.ActorSystem
 import com.briehman.errorregistry.dispatcher.RabbitMqReceiveErrorDispatcher
 import com.briehman.errorregistry.interactor.{GetErrorSummaryInteractor, ReceiveErrorInteractor}
-import com.briehman.errorregistry.repository.{DatabaseErrorOccurrenceRepository, DatabaseErrorRepository, InMemoryErrorOccurrenceRepository, InMemoryErrorRepository}
+import com.briehman.errorregistry.repository.db.{DatabaseErrorOccurrenceRepository, DatabaseErrorRepository}
 import com.briehman.errorregistry.service.FakeNotificationService
 import com.briehman.errorregistry.web.HomePageServlet
 import com.briehman.errorregistry.web.api.ErrorApiResource
 import com.rabbitmq.client.ConnectionFactory
 import org.scalatra.LifeCycle
+import slick.driver.MySQLDriver.api._
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
-import slick.driver.MySQLDriver.api._
 
 class ScalatraBootstrap extends LifeCycle {
   val connFactory = new ConnectionFactory()

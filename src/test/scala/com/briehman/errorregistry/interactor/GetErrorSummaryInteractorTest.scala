@@ -5,11 +5,11 @@ import java.time.{LocalDate, LocalDateTime, LocalTime}
 
 import com.briehman.errorregistry.boundary.{ErrorOccurrenceSummary, ErrorSummary}
 import com.briehman.errorregistry.models.{AppError, ErrorOccurrence}
+import com.briehman.errorregistry.repository.memory.{InMemoryErrorOccurrenceRepository, InMemoryErrorRepository}
 import org.scalatest.Matchers
 import org.scalatest.path.FunSpec
-import com.briehman.errorregistry.repository.{InMemoryErrorOccurrenceRepository, InMemoryErrorRepository}
 
-class GetAppErrorSummaryInteractorTest extends FunSpec with Matchers {
+class GetErrorSummaryInteractorTest extends FunSpec with Matchers {
   val errorRepository = new InMemoryErrorRepository
   val occurrenceRepository = new InMemoryErrorOccurrenceRepository(errorRepository)
   val interactor = new GetErrorSummaryInteractor(occurrenceRepository)
