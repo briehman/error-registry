@@ -8,7 +8,7 @@
 
 - newErrors match
     - case Nil =>
-        %h1 No new errors
+        %h3 No new errors
     - case _ =>
         %table
             %caption New Errors
@@ -28,7 +28,7 @@
 
 - recentErrors match
     - case Nil =>
-        %h1 No recent errors
+        %h3 No recent errors
     - case _ =>
         %table
             %caption Recent Errors
@@ -48,7 +48,7 @@
 
 - mostFrequentWeeklyErrors match
     - case Nil =>
-        %h1 No frequent errors
+        %h3 No errors this week
     - case _ =>
         %table
             %caption Most Frequent Errors this week
@@ -68,7 +68,7 @@
 
 - mostFrequentMonthlyErrors match
     - case Nil =>
-        %h1 No frequent errors
+        %h3 No errors this month
     - case _ =>
         %table
             %caption Most Frequent Errors this month
