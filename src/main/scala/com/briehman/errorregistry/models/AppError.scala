@@ -14,9 +14,11 @@ object AppError extends ((Int, String) => AppError) {
   class AppErrors(tag: Tag) extends Table[AppError](tag, "errors") {
     def id = column[Int]("error_id", O.PrimaryKey, O.AutoInc)
 
-    def code = column[String]("code")
+    def code = column[String]("code", O.SqlType("VARCHAR(32)"))
 
     override def * = (id, code) <>(AppError.tupled, AppError.unapply)
+
+    def uniqueCodes = index("code_unique", code, unique = true)
   }
 
   val table: TableQuery[AppErrors] = TableQuery[AppErrors]
