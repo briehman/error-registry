@@ -5,11 +5,11 @@ import java.util.Date
 
 import com.briehman.errorregistry.models.AppError
 
-case class RequestInformationMessage(uri: URI,
-                                     parameters: String,
-                                     `type`: String,
-                                     sessionId: String
-                             )
+case class AppErrorMessage(code: String,
+                           application: String,
+                           occurrence: ErrorOccurrenceMessage,
+                           errorString: String
+                          )
 
 case class ErrorOccurrenceMessage(date: Date = new Date(),
                                   hostname: String,
@@ -19,9 +19,10 @@ case class ErrorOccurrenceMessage(date: Date = new Date(),
                                   issue: Option[String],
                                   user: Option[String],
                                   requestInformation: RequestInformationMessage
-                            )
+                                 )
 
-case class AppErrorMessage(code: String,
-                           application: String,
-                           occurrence: ErrorOccurrenceMessage
-                         )
+case class RequestInformationMessage(uri: URI,
+                                     parameters: String,
+                                     `type`: String,
+                                     sessionId: String
+                                    )

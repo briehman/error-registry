@@ -82,7 +82,7 @@ class GetErrorSummaryInteractorTest extends FunSpec with Matchers {
             ErrorSummary(second.id, "second", ErrorOccurrenceSummary(second.id, secondTime, secondTime, 1, 1)))
       }
 
-      it("ignores recent occurrenes of old errors") {
+      it("ignores recent occurrences of old errors") {
         val startingPoint = LocalDateTime.of(LocalDate.of(2016, 1, 1), LocalTime.of(12, 0, 0, 0))
         val error = storeErrorAndOccurrence("first", startingPoint)
         storeOccurrence(startingPoint.plusSeconds(1), error)
@@ -93,7 +93,7 @@ class GetErrorSummaryInteractorTest extends FunSpec with Matchers {
   }
 
   def storeErrorAndOccurrence(errorCode: String, dt: LocalDateTime): AppError = {
-    val selectError = errorRepository.store(new AppError(code = errorCode))
+    val selectError = errorRepository.store(new AppError(code = errorCode, error = ""))
     storeOccurrence(dt, selectError)
     selectError
   }

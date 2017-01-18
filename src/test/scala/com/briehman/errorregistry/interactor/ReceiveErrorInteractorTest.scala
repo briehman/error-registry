@@ -32,8 +32,8 @@ class ReceiveErrorInteractorTest extends org.scalatest.path.FunSpec with Matcher
     }
 
     describe("receiving a new errorMessage") {
-      val msg = buildMessage("newError")
-      val error = AppError(code = msg.code)
+      val msg = buildMessage("newError", "new")
+      val error = AppError(msg)
       val response = interactor.receiveError(msg)
 
       it("responds with a ReceivedOk") {
@@ -61,8 +61,8 @@ class ReceiveErrorInteractorTest extends org.scalatest.path.FunSpec with Matcher
     }
 
     describe("receiving a previously stored errorMessage") {
-      val msg = buildMessage("existingError")
-      val error = AppError(code = msg.code)
+      val msg = buildMessage("existingError", "existing")
+      val error = AppError(msg)
       val existingError = errorRepository.store(error)
       val response = interactor.receiveError(msg)
 
@@ -86,11 +86,11 @@ class ReceiveErrorInteractorTest extends org.scalatest.path.FunSpec with Matcher
     }
   }
 
-  def buildMessage(code: String): AppErrorMessage = {
+  def buildMessage(code: String, error: String): AppErrorMessage = {
     val request = new RequestInformationMessage(null, null, "GET", null)
     val occurrence = new ErrorOccurrenceMessage(new Date, "hostname", "buildNum",
       "branch", "dev", None, None, request)
-    new AppErrorMessage(code, "app", occurrence)
+    new AppErrorMessage(code, "app", occurrence, error)
   }
 }
 

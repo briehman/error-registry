@@ -6,7 +6,7 @@ import java.time.LocalDateTime
 import com.briehman.errorregistry.boundary.{ErrorOccurrenceSummary, ErrorSummary}
 import com.briehman.errorregistry.models.ErrorOccurrence
 import com.briehman.errorregistry.repository.ErrorOccurrenceRepository
-import slick.driver.MySQLDriver.api._
+  import slick.driver.MySQLDriver.api._
 
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration

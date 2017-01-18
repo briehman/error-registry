@@ -2,21 +2,29 @@ package com.briehman.errorregistry.models
 
 import java.sql.Timestamp
 
+import com.briehman.errorregistry.message.{AppErrorMessage, ErrorOccurrenceMessage}
 import slick.driver.MySQLDriver.api._
 import slick.lifted.TableQuery
 
 case class AppError(
                   id: Int = 0,
-                  code: String
+                  code: String,
+                  error: String
                   )
 
-object AppError extends ((Int, String) => AppError) {
+object AppError extends ((Int, String, String) => AppError) {
+  def apply(message: AppErrorMessage): AppError = {
+    apply(code = message.code, error = message.errorString)
+  }
+
   class AppErrors(tag: Tag) extends Table[AppError](tag, "errors") {
     def id = column[Int]("error_id", O.PrimaryKey, O.AutoInc)
 
     def code = column[String]("code", O.SqlType("VARCHAR(32)"))
 
-    override def * = (id, code) <>(AppError.tupled, AppError.unapply)
+    def error = column[String]("error")
+
+    override def * = (id, code, error) <>(AppError.tupled, AppError.unapply)
 
     def uniqueCodes = index("code_unique", code, unique = true)
   }
@@ -31,6 +39,10 @@ case class ErrorOccurrence(
                             )
 
 object ErrorOccurrence extends ((Int, Int, Timestamp) => ErrorOccurrence) {
+  def apply(message: ErrorOccurrenceMessage, error: AppError): ErrorOccurrence = {
+    apply(error_pk = error.id, date = new Timestamp(message.date.getTime))
+  }
+
   class ErrorOccurrences(tag: Tag) extends Table[ErrorOccurrence](tag, "occurrences") {
     def id = column[Int]("occurrence_id", O.PrimaryKey, O.AutoInc)
 

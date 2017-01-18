@@ -1,8 +1,5 @@
 package com.briehman.errorregistry.interactor
 
-import java.sql.Timestamp
-import java.util.Calendar
-
 import com.briehman.errorregistry.boundary.{ReceiveErrorBoundary, ReceiveErrorResponse, ReceiveFailed, ReceivedOk}
 import com.briehman.errorregistry.message.AppErrorMessage
 import com.briehman.errorregistry.models.{AppError, ErrorOccurrence}
@@ -16,8 +13,8 @@ class ReceiveErrorInteractor(errorRepository: ErrorRepository,
     if (message == null) {
       ReceiveFailed
     } else {
-      val error = storeError(AppError(code = message.code))
-      val occurrence = ErrorOccurrence(error_pk = error.id, date = new Timestamp(message.occurrence.date.getTime))
+      val error = storeError(AppError(message))
+      val occurrence = ErrorOccurrence(message.occurrence, error)
       ReceivedOk(error, occurrenceRepository.store(occurrence))
     }
   }
