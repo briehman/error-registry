@@ -22,7 +22,6 @@ case class ErrorOccurrenceMessage(date: Date = new Date(),
                                  )
 
 case class RequestInformationMessage(uri: URI,
-                                     parameters: String,
-                                     `type`: String,
-                                     sessionId: String
-                                    )
+                                     methodType: String,
+                                     parameters: Option[String],
+                                     sessionId: Option[String])

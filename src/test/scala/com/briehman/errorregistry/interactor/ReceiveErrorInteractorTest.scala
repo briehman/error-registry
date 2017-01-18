@@ -87,7 +87,7 @@ class ReceiveErrorInteractorTest extends org.scalatest.path.FunSpec with Matcher
   }
 
   def buildMessage(code: String, error: String): AppErrorMessage = {
-    val request = new RequestInformationMessage(null, null, "GET", null)
+    val request = new RequestInformationMessage(null, "GET", null, null)
     val occurrence = new ErrorOccurrenceMessage(new Date, "hostname", "buildNum",
       "branch", "dev", None, None, request)
     new AppErrorMessage(code, "app", occurrence, error)

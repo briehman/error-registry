@@ -1,10 +1,11 @@
 package com.briehman.errorregistry.interactor
 
+import java.net.URI
 import java.sql.Timestamp
 import java.time.{LocalDate, LocalDateTime, LocalTime}
 
 import com.briehman.errorregistry.boundary.{ErrorOccurrenceSummary, ErrorSummary}
-import com.briehman.errorregistry.models.{AppError, ErrorOccurrence}
+import com.briehman.errorregistry.models.{AppError, BuildInformation, ErrorOccurrence, RequestInformation}
 import com.briehman.errorregistry.repository.memory.{InMemoryErrorOccurrenceRepository, InMemoryErrorRepository}
 import org.scalatest.Matchers
 import org.scalatest.path.FunSpec
@@ -99,6 +100,9 @@ class GetErrorSummaryInteractorTest extends FunSpec with Matchers {
   }
 
   def storeOccurrence(dt: LocalDateTime, selectError: AppError): ErrorOccurrence = {
-    occurrenceRepository.store(ErrorOccurrence(error_pk = selectError.id, date = Timestamp.valueOf(dt)))
+    occurrenceRepository.store(ErrorOccurrence(error_pk = selectError.id,
+      date = Timestamp.valueOf(dt), hostname = "localhost",
+      buildInfo = BuildInformation("", ""),
+      requestInfo = RequestInformation(new URI("http://localhost"), "GET", None, None)))
   }
 }
