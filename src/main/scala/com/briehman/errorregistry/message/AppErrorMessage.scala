@@ -15,9 +15,9 @@ case class ErrorOccurrenceMessage(date: Date = new Date(),
                                   hostname: String,
                                   build: String,
                                   branch: String,
-                                  environment: String,
-                                  issue: Option[String],
-                                  user: Option[String],
+                                  environment: Option[String] = None,
+                                  issue: Option[String] = None,
+                                  user: Option[String] = None,
                                   requestInformation: RequestInformationMessage
                                  )
 

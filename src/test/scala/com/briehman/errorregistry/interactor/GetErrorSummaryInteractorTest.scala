@@ -103,6 +103,6 @@ class GetErrorSummaryInteractorTest extends FunSpec with Matchers {
     occurrenceRepository.store(ErrorOccurrence(error_pk = selectError.id,
       date = Timestamp.valueOf(dt), hostname = "localhost",
       buildInfo = BuildInformation("", ""),
-      requestInfo = RequestInformation(new URI("http://localhost"), "GET", None, None)))
+      requestInfo = RequestInformation(uri = new URI("http://localhost"), methodType = "GET")))
   }
 }
