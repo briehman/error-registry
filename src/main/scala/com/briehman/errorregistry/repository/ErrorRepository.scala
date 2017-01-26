@@ -3,7 +3,7 @@ package com.briehman.errorregistry.repository
 import com.briehman.errorregistry.models.AppError
 
 trait ErrorRepository {
-  def find(primaryKey: Int): Option[AppError]
+  def find(error_id: Int): Option[AppError]
 
   def find(code: String): Option[AppError]
 

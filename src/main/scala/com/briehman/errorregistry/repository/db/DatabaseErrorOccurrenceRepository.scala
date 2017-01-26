@@ -3,10 +3,10 @@ package com.briehman.errorregistry.repository.db
 import java.sql.Timestamp
 import java.time.LocalDateTime
 
-import com.briehman.errorregistry.boundary.{ErrorOccurrenceSummary, ErrorSummary}
+import com.briehman.errorregistry.boundary.{AppErrorDetailStats, ErrorOccurrenceSummary, ErrorSummary}
 import com.briehman.errorregistry.models.ErrorOccurrence
 import com.briehman.errorregistry.repository.ErrorOccurrenceRepository
-  import slick.driver.MySQLDriver.api._
+import slick.driver.MySQLDriver.api._
 
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
@@ -60,6 +60,23 @@ class DatabaseErrorOccurrenceRepository(db: Database) extends ErrorOccurrenceRep
       ErrorSummary(errorId, code,
         ErrorOccurrenceSummary(errorId, minDate.get.toLocalDateTime, maxDate.get.toLocalDateTime,
           sinceErrorCount, totalErrorCount))
+    }
+  }
+
+
+  override def getStatsByAppError(errorId: Int): Option[AppErrorDetailStats] = {
+    val errorStats = (for {
+      occurrences <- ErrorOccurrence.table
+        .filter(_.errorId === errorId)
+
+    } yield occurrences)
+      .groupBy(_.errorId)
+      .map { case (_, group) =>
+        (group.map(_.date).min.get, group.map(_.date).max.get, group.length)
+      }
+
+    Await.result(db.run(errorStats.result), Duration.Inf).headOption.map { case (minDate, maxDate, totalErrorOccurrenceCount) =>
+      AppErrorDetailStats(minDate.toLocalDateTime, maxDate.toLocalDateTime, totalErrorOccurrenceCount)
     }
   }
 

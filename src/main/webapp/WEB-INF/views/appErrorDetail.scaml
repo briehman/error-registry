@@ -1,0 +1,14 @@
+- import com.briehman.errorregistry.boundary.ErrorSummary
+- import com.briehman.errorregistry.boundary.AppErrorDetail
+
+- attributes("title") = "Application Error Details"
+
+-@ var requestedError: String
+-@ var details: Option[AppErrorDetail]
+
+- details match
+    - case None =>
+        %h3 Unable to find requested error #{requestedError}
+    - case detail =>
+        Found it!
+        #{detail}

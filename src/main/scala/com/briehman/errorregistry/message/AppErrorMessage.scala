@@ -23,5 +23,11 @@ case class ErrorOccurrenceMessage(date: Date = new Date(),
 
 case class RequestInformationMessage(uri: URI,
                                      methodType: String,
-                                     parameters: Option[String],
-                                     sessionId: Option[String])
+                                     parameters: Option[String] = None,
+                                     sessionId: Option[String] = None)
+
+object RequestInformationMessage {
+  def apply(uri: String, methodType: String): RequestInformationMessage = {
+    apply(new java.net.URI(uri), methodType)
+  }
+}

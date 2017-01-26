@@ -2,7 +2,7 @@ package com.briehman.errorregistry.repository.memory
 
 import java.time.LocalDateTime
 
-import com.briehman.errorregistry.boundary.{ErrorOccurrenceSummary, ErrorSummary}
+import com.briehman.errorregistry.boundary.{AppErrorDetailStats, ErrorOccurrenceSummary, ErrorSummary}
 import com.briehman.errorregistry.models.ErrorOccurrence
 import com.briehman.errorregistry.repository.{ErrorOccurrenceRepository, ErrorRepository}
 
@@ -60,7 +60,22 @@ class InMemoryErrorOccurrenceRepository(errorRepository: ErrorRepository)
         }
     }
 
-    private def getOccurrenceSummariesSince(date: LocalDateTime): List[ErrorOccurrenceSummary] = {
+  override def getStatsByAppError(errorId: Int): Option[AppErrorDetailStats] = {
+    val errorOccurrences = occurrencesById
+      .filter { case (id, occurrence) => occurrence.error_pk == errorId }
+      .map { case (_, occurrence) => occurrence }
+
+    if (errorOccurrences.nonEmpty) {
+      Some(AppErrorDetailStats(
+        errorOccurrences.minBy(_.date).date.toLocalDateTime,
+        errorOccurrences.maxBy(_.date).date.toLocalDateTime,
+        errorOccurrences.size))
+    } else {
+      None
+    }
+  }
+
+  private def getOccurrenceSummariesSince(date: LocalDateTime): List[ErrorOccurrenceSummary] = {
       occurrencesById
         .filter { case (id, occurrence) => occurrence.date.toLocalDateTime.isAfter(date) }
         .groupBy { case (id, occurrence) => occurrence.error_pk }

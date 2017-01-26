@@ -2,10 +2,10 @@ import javax.servlet.ServletContext
 
 import akka.actor.ActorSystem
 import com.briehman.errorregistry.dispatcher.RabbitMqReceiveErrorDispatcher
-import com.briehman.errorregistry.interactor.{GetErrorSummaryInteractor, ReceiveErrorInteractor}
+import com.briehman.errorregistry.interactor.{GetAppErrorDetailInteractor, GetErrorSummaryInteractor, ReceiveErrorInteractor}
 import com.briehman.errorregistry.repository.db.{DatabaseErrorOccurrenceRepository, DatabaseErrorRepository}
 import com.briehman.errorregistry.service.FakeNotificationService
-import com.briehman.errorregistry.web.HomePageServlet
+import com.briehman.errorregistry.web.{AppErrorDetailServlet, HomePageServlet}
 import com.briehman.errorregistry.web.api.ErrorApiResource
 import com.rabbitmq.client.ConnectionFactory
 import org.scalatra.LifeCycle
@@ -36,12 +36,15 @@ class ScalatraBootstrap extends LifeCycle {
 
   val receiveDispatcher = new RabbitMqReceiveErrorDispatcher(system, connFactory, receiveInteractor)
 
+  val appErrorDetailBoundary = new GetAppErrorDetailInteractor(errorRepository, occurrenceRepository)
+
   override def init(context: ServletContext) {
     receiveDispatcher.start()
 
     // mount servlets like this:
     context mount (new ErrorApiResource(receiveInteractor), "/api/error/*")
     context mount (new HomePageServlet(errorSummaryInteractor), "/")
+    context mount (new AppErrorDetailServlet(appErrorDetailBoundary), "/error")
   }
 
   override def destroy(context: ServletContext): Unit = {
