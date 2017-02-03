@@ -6,9 +6,41 @@
 -@ var requestedError: String
 -@ var details: Option[AppErrorDetail]
 
+%script{:type => "text/javascript",
+        :src  => "/webjars/jquery/3.1.1-1/jquery.min.js"}
+
+%script{:type => "text/javascript",
+        :src  => "/webjars/datatables/1.10.13/js/jquery.dataTables.min.js"}
+
+%head
+    %link(rel="stylesheet" href="/webjars/datatables/1.10.13/css/jquery.dataTables.min.css")
+
 - details match
     - case None =>
         %h3 Unable to find requested error #{requestedError}
-    - case detail =>
+    - case Some(detail) =>
         Found it!
         #{detail}
+        #{detail.code}
+        #{detail.errorId}
+
+        %table#occurrences
+            %thead
+                %tr
+                    %th ID
+                    %th Date
+            %tfoot
+                %tr
+                    %th ID
+                    %th Date
+
+        :&javascript
+            $('#occurrences').DataTable({
+                serverSide: true,
+                ajax: '/api/occurrences/#{detail.errorId}',
+                columns: [
+                    { "data": "id" },
+                    { "data": "date" },
+                ],
+                lengthMenu: [[1, 2, 5, -1], [1, 2, 5, "All"]]
+            });

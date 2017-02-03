@@ -95,4 +95,16 @@ class DatabaseErrorOccurrenceRepository(db: Database) extends ErrorOccurrenceRep
           recentCount, errorResults.length)
       }
   }
+
+  override def findByError(appErrorId: Int, startAt: Int, maxResults: Int): Seq[ErrorOccurrence] = {
+    val occurrences = for {
+      occurrences <- ErrorOccurrence.table
+        .filter(_.errorId === appErrorId)
+        .sortBy(_.date.desc)
+        .drop(startAt)
+        .take(maxResults)
+    } yield occurrences
+
+    Await.result(db.run(occurrences.result), Duration.Inf)
+  }
 }

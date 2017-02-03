@@ -22,16 +22,18 @@ lazy val root = (project in file("."))
       "org.eclipse.jetty" % "jetty-webapp" % "9.2.10.v20150310" % "container",
       "org.json4s" %% "json4s-jackson" % "3.3.0",
       "org.mockito" % "mockito-core" % "1.10.19" % Test,
-      "org.scala-lang.modules" % "scala-xml_2.11" % "1.0.5",
       "org.scala-lang" % "scala-compiler" % scalaVersion.value,
       "org.scala-lang" % "scala-library" % scalaVersion.value,
       "org.scala-lang" % "scala-reflect" % scalaVersion.value,
+      "org.scala-lang.modules" % "scala-xml_2.11" % "1.0.5",
       "org.scalatest" %% "scalatest" % "3.0.0" % Test,
       "org.scalatra" %% "scalatra" % scalatraVersion,
       "org.scalatra" %% "scalatra-json" % scalatraVersion,
       "org.scalatra" %% "scalatra-scalate" % scalatraVersion,
       "org.scalatra" %% "scalatra-specs2" % scalatraVersion % "test",
-      "org.slf4j" % "slf4j-nop" % "1.6.4"
+      "org.slf4j" % "slf4j-nop" % "1.6.4",
+      "org.webjars" % "datatables" % "1.10.13",
+      "org.webjars" % "jquery" % "3.1.1-1"
     )
   )
 

@@ -7,7 +7,7 @@ import com.briehman.errorregistry.boundary.{AppErrorDetailStats, ErrorSummary}
 import com.briehman.errorregistry.models.ErrorOccurrence
 
 trait ErrorOccurrenceRepository {
-  protected implicit def ordered[T <: Timestamp] = new Ordering[T] {
+  protected implicit def timestampOrderAsc[T <: Timestamp] = new Ordering[T] {
     def compare(x: T, y: T): Int = x compareTo y
   }
 
@@ -28,4 +28,6 @@ trait ErrorOccurrenceRepository {
   def listUniqueMostFrequent(since: LocalDateTime, max: Int): Seq[ErrorSummary]
 
   def getStatsByAppError(errorId: Int): Option[AppErrorDetailStats]
+
+  def findByError(appErrorId: Int, startAt: Int, maxResults: Int): Seq[ErrorOccurrence]
 }
