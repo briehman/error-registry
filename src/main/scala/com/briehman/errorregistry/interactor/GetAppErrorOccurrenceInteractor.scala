@@ -9,4 +9,6 @@ class GetAppErrorOccurrenceInteractor(errorOccurrenceRepository: ErrorOccurrence
   override def getOccurrences(appErrorId: Int, startAt: Int, maxResults: Int): Seq[ErrorOccurrence] = {
     errorOccurrenceRepository.findByError(appErrorId, startAt, maxResults)
   }
+
+  override def countTotalOccurrences(appErrorId: Int): Int = errorOccurrenceRepository.countErrorOccurrences(appErrorId)
 }

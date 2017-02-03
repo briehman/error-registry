@@ -30,4 +30,6 @@ trait ErrorOccurrenceRepository {
   def getStatsByAppError(errorId: Int): Option[AppErrorDetailStats]
 
   def findByError(appErrorId: Int, startAt: Int, maxResults: Int): Seq[ErrorOccurrence]
+
+  def countErrorOccurrences(appErrorId: Int): Int
 }

@@ -89,4 +89,6 @@ class InMemoryErrorOccurrenceRepository(errorRepository: ErrorRepository)
     }
 
   override def findByError(appErrorId: Int, startAt: Int, maxResults: Int): Seq[ErrorOccurrence] = ???
+
+  override def countErrorOccurrences(appErrorId: Int): Int = ???
 }

@@ -24,7 +24,7 @@ class GetAppErrorOccurrencesResource(interactor: GetAppErrorOccurrenceInteractor
     val occurrences = interactor.getOccurrences(appErrorId, startAt, maxResults)
     Map("data" -> occurrences,
       "start" -> startAt,
-      "recordsTotal" -> 100,
+      "recordsTotal" -> interactor.countTotalOccurrences(appErrorId),
       "recordsFiltered" -> occurrences.size)
   }
 }

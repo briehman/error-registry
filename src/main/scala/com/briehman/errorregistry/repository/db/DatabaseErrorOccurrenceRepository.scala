@@ -107,4 +107,12 @@ class DatabaseErrorOccurrenceRepository(db: Database) extends ErrorOccurrenceRep
 
     Await.result(db.run(occurrences.result), Duration.Inf)
   }
+
+  override def countErrorOccurrences(appErrorId: Int): Int = {
+    val numOccurrences = ErrorOccurrence.table
+        .filter(_.errorId === appErrorId)
+        .length
+
+    Await.result(db.run(numOccurrences.result), Duration.Inf)
+  }
 }
