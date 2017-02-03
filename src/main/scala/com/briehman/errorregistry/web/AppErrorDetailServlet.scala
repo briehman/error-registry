@@ -1,6 +1,6 @@
 package com.briehman.errorregistry.web
 
-import com.briehman.errorregistry.boundary.GetAppErrorDetailBoundary
+import com.briehman.errorregistry.boundary.{GetAppErrorDetailBoundary, GetErrorSummaryBoundary}
 import org.scalatra.ScalatraServlet
 import org.scalatra.scalate.ScalateSupport
 
@@ -20,13 +20,19 @@ class AppErrorDetailServlet(appErrorDetailBoundary: GetAppErrorDetailBoundary)
     contentType = "text/html"
 
     val requestedError = params("error")
-    val details = try {
-      val errorId = requestedError.toInt
-      appErrorDetailBoundary.getDetails(errorId)
-    } catch {
-      case _: NumberFormatException => appErrorDetailBoundary.getDetails(requestedError)
+
+    val idOrCode = if (requestedError.forall(_.isDigit)) {
+      Left(requestedError.toInt)
+    } else {
+      Right(requestedError)
     }
 
+    val details = idOrCode match {
+      case Left(id) =>
+        appErrorDetailBoundary.getDetails(id)
+          .orElse(appErrorDetailBoundary.getDetails(requestedError))
+      case Right(code) => appErrorDetailBoundary.getDetails(code)
+    }
 
     scaml("/WEB-INF/views/appErrorDetail.scaml",
       "requestedError" -> requestedError,

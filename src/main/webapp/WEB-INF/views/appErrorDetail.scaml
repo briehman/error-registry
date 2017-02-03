@@ -12,17 +12,23 @@
 %script{:type => "text/javascript",
         :src  => "/webjars/datatables/1.10.13/js/jquery.dataTables.min.js"}
 
-%head
-    %link(rel="stylesheet" href="/webjars/datatables/1.10.13/css/jquery.dataTables.min.css")
-
 - details match
     - case None =>
         %h3 Unable to find requested error #{requestedError}
     - case Some(detail) =>
-        Found it!
-        #{detail}
-        #{detail.code}
-        #{detail.errorId}
+        %table#appError
+            %thead
+                %th Code
+                %th Message
+                %th First Seen
+                %th Last Seen
+                %th Total Occurrences
+            %tbody
+                %td #{detail.code}
+                %td #{detail.message}
+                %td #{detail.summary.firstSeen}
+                %td #{detail.summary.lastSeen}
+                %td #{detail.summary.totalOccurrences}
 
         %table#occurrences
             %thead
@@ -42,5 +48,5 @@
                     { "data": "id" },
                     { "data": "date" },
                 ],
-                lengthMenu: [[1, 2, 5, -1], [1, 2, 5, "All"]]
+                lengthMenu: [[10, 25, 50], [10, 25, 50]]
             });
