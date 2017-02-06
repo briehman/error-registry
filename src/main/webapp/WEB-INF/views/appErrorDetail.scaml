@@ -35,10 +35,16 @@
                 %tr
                     %th ID
                     %th Date
+                    %th Hostname
+                    %th Environment
+                    %th User
             %tfoot
                 %tr
                     %th ID
                     %th Date
+                    %th Hostname
+                    %th Environment
+                    %th User
 
         :&javascript
             $('#occurrences').DataTable({
@@ -47,6 +53,9 @@
                 columns: [
                     { "data": "id" },
                     { "data": "date" },
+                    { "data": "hostname" },
+                    { "data": "environment" },
+                    { "data": "user" },
                 ],
                 lengthMenu: [[10, 25, 50], [10, 25, 50]]
             });

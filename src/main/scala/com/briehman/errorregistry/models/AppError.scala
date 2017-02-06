@@ -43,7 +43,14 @@ case class ErrorOccurrence(
                             user: Option[String] = None,
                             buildInfo: BuildInformation,
                             requestInfo: RequestInformation
-                            )
+                            ) {
+  def transformForApi: ErrorOccurrence = {
+    this.copy(environment = Some(environment.getOrElse("")),
+      issue = Some(issue.getOrElse("")),
+      user = Some(user.getOrElse("")),
+      requestInfo = requestInfo.transformForApi())
+  }
+}
 
 object ErrorOccurrence extends (
   (Int, Int, Timestamp, String, Option[String], Option[String], Option[String],
@@ -121,7 +128,13 @@ case class BuildInformation(build: String, branch: String)
 case class RequestInformation(uri: URI,
                               methodType: String,
                               parameters: Option[String] = None,
-                              sessionId: Option[String] = None)
+                              sessionId: Option[String] = None) {
+  def transformForApi(): RequestInformation = {
+    this.copy(
+      parameters = Some(parameters.getOrElse("")),
+      sessionId = Some(sessionId.getOrElse("")))
+  }
+}
 
 object RequestInformation extends ((URI, String, Option[String], Option[String]) => RequestInformation) {
   def apply(message: RequestInformationMessage): RequestInformation = {

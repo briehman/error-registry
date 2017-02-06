@@ -3,12 +3,12 @@ package com.briehman.errorregistry.dispatcher
 import akka.actor.{Actor, ActorSystem, Props}
 import com.briehman.errorregistry.interactor.ReceiveErrorInteractor
 import com.briehman.errorregistry.message.AppErrorMessage
-import com.briehman.errorregistry.web.{CustomTimestampSerializer, DateSerializer, UriSerializer}
+import com.briehman.errorregistry.web.AppErrorJsonFormats
 import com.github.sstone.amqp.Amqp._
 import com.github.sstone.amqp.{Amqp, ConnectionOwner, Consumer}
 import com.rabbitmq.client.ConnectionFactory
+import org.json4s._
 import org.json4s.jackson.JsonMethods._
-import org.json4s.{DefaultFormats, Formats, _}
 
 import scala.concurrent.duration._
 
@@ -17,7 +17,7 @@ class RabbitMqReceiveErrorDispatcher(system: ActorSystem,
                                      receiveInteractor: ReceiveErrorInteractor) {
   private val ERROR_EXCHANGE: String = "app_error"
 
-  implicit val jsonFormats: Formats = DefaultFormats + DateSerializer + CustomTimestampSerializer + UriSerializer
+  implicit val jsonFormats: Formats = AppErrorJsonFormats.appErrorJsonFormats
 
   private val conn = system.actorOf(ConnectionOwner.props(connFactory, 1 second))
 

@@ -3,7 +3,7 @@ package com.briehman.errorregistry.web.api
 import com.briehman.errorregistry.boundary.{ReceiveFailed, ReceivedOk}
 import com.briehman.errorregistry.interactor.ReceiveErrorInteractor
 import com.briehman.errorregistry.message.AppErrorMessage
-import com.briehman.errorregistry.web.{UriSerializer, CustomTimestampSerializer, DateSerializer}
+import com.briehman.errorregistry.web.{AppErrorJsonFormats, CustomTimestampSerializer, DateSerializer, UriSerializer}
 import org.scalatra.ScalatraServlet
 import org.scalatra.scalate.ScalateSupport
 
@@ -15,10 +15,8 @@ import org.scalatra.json._
 
 class ErrorApiResource(receiveErrorInteractor: ReceiveErrorInteractor)
   extends ScalatraServlet
-    with JacksonJsonSupport
+    with AppErrorJsonFormats
     with ScalateSupport {
-  override protected implicit def jsonFormats: Formats = DefaultFormats + DateSerializer + CustomTimestampSerializer + UriSerializer
-
   post("/") {
     val errorMessage = parsedBody.extract[AppErrorMessage]
     val response = receiveErrorInteractor.receiveError(errorMessage)

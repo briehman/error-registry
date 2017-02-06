@@ -1,21 +1,13 @@
 package com.briehman.errorregistry.web
 
-import com.briehman.errorregistry.boundary.{GetAppErrorDetailBoundary, GetErrorSummaryBoundary}
+import com.briehman.errorregistry.boundary.GetAppErrorDetailBoundary
 import org.scalatra.ScalatraServlet
 import org.scalatra.scalate.ScalateSupport
 
-// JSON-related libraries
-import org.json4s.{DefaultFormats, Formats}
-
-// JSON handling support from Scalatra
-import org.scalatra.json._
-
 class AppErrorDetailServlet(appErrorDetailBoundary: GetAppErrorDetailBoundary)
   extends ScalatraServlet
-    with JacksonJsonSupport
+    with AppErrorJsonFormats
     with ScalateSupport {
-  override protected implicit def jsonFormats: Formats = DefaultFormats + DateSerializer + CustomTimestampSerializer + UriSerializer
-
   get("/:error") {
     contentType = "text/html"
 

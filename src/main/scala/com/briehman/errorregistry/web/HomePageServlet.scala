@@ -15,10 +15,8 @@ import org.scalatra.json._
 
 class HomePageServlet(errorSummaryBoundary: GetErrorSummaryBoundary)
   extends ScalatraServlet
-    with JacksonJsonSupport
+    with AppErrorJsonFormats
     with ScalateSupport {
-  override protected implicit def jsonFormats: Formats = DefaultFormats + DateSerializer + CustomTimestampSerializer + UriSerializer
-
   get("/") {
     contentType = "text/html"
     // TODO go back to 1 week
